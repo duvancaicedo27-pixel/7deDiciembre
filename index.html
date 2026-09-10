@@ -87,8 +87,27 @@
 </section>
 
 <section class="share section" id="compartir">
-  <div class="share-copy"><div class="kicker">COMPARTE LA LUZ <i></i></div><h2>¿Te gustó una<br><em>velita?</em></h2><p>También puedes apoyar este emprendimiento compartiéndola en tus Estados de WhatsApp.</p><button class="gold-btn" id="shareBtn">Compartir en mi estado ↗</button><small>La web prepara la publicación y tú decides cuándo compartirla.</small></div>
-  <div class="share-art"><div class="gift">Gracias<br>por ser parte<br>de esta luz ♡</div><div class="share-script">Pequeñas velas<br><em>grandes historias</em></div></div>
+  <div class="share-copy">
+    <div class="kicker">COMPARTE LA LUZ <i></i></div>
+    <h2>¿Te gustó una<br><em>velita?</em></h2>
+    <p>Apóyanos compartiendo una imagen del catálogo disponible. Puedes enviarla a una persona específica o usar la opción de compartir de tu celular.</p>
+
+    <div class="share-phone">
+      <label for="sharePhone">Número de WhatsApp de la persona</label>
+      <div class="phone-row">
+        <span>+57</span>
+        <input id="sharePhone" inputmode="numeric" maxlength="10" placeholder="321 769 1827" aria-label="Número de WhatsApp">
+      </div>
+      <small>Opcional. Déjalo vacío para abrir la ventana de compartir.</small>
+    </div>
+
+    <button class="gold-btn" id="shareBtn">Compartir catálogo disponible ↗</button>
+    <small>La imagen se prepara con los productos disponibles en la página.</small>
+  </div>
+  <div class="share-art">
+    <div class="gift">Gracias<br>por ser parte<br>de esta luz ♡</div>
+    <div class="share-script">Pequeñas velas<br><em>grandes historias</em></div>
+  </div>
 </section>
 </main>
 
@@ -153,9 +172,29 @@
 
 <div class="modal" id="wishModal" aria-hidden="true"><div class="shade" data-close-wish></div><div class="modal-card"><button class="x" data-close-wish>×</button><div class="kicker">HAZLO PERSONAL <i></i></div><h3>Enciende un <em>deseo.</em></h3><p>Escribe algo que quieras celebrar, agradecer o pedir este 7 de diciembre.</p><div class="wish-row"><input id="wishInput" maxlength="100" placeholder="Escribe tu deseo aquí…"><button class="gold-btn" id="wishSend">✦ Encender</button></div><small>Tu deseo se queda en este dispositivo.</small></div></div>
 
-<div class="modal" id="shareModal" aria-hidden="true"><div class="shade" data-close-share></div><div class="modal-card"><button class="x" data-close-share>×</button><div class="kicker">LISTO PARA COMPARTIR <i></i></div><h3>Tu publicación para Estados</h3><div class="status"><b>7 DE DICIEMBRE</b><em>Luz para compartir.</em><span>Una velita para esta noche</span><div class="status-candle"></div><div class="status-flame"></div></div><p>En tu teléfono podrás continuar a WhatsApp y elegir “Mi estado”.</p><button class="gold-btn full" id="shareWhatsApp">Continuar en WhatsApp</button></div></div>
+<div class="modal" id="shareModal" aria-hidden="true">
+  <div class="shade" data-close-share></div>
+  <div class="modal-card share-modal-card">
+    <button class="x" data-close-share>×</button>
+    <div class="kicker">LISTO PARA COMPARTIR <i></i></div>
+    <h3>Catálogo disponible</h3>
+    <div class="catalog-share-preview" id="catalogSharePreview">
+      <div class="preview-top">7 DE DICIEMBRE</div>
+      <div class="preview-title">Luz para <em>compartir.</em></div>
+      <div class="preview-candles"></div>
+      <div class="preview-foot">Productos disponibles · Luz de Diciembre</div>
+    </div>
+    <label class="share-modal-label" for="shareModalPhone">Enviar a un número específico (opcional)</label>
+    <div class="phone-row modal-phone"><span>+57</span><input id="shareModalPhone" inputmode="numeric" maxlength="10" placeholder="321 769 1827"></div>
+    <p>La imagen reúne automáticamente las velitas disponibles. En celular puedes compartirla por WhatsApp y elegir el contacto o tu Estado.</p>
+    <div class="modal-actions">
+      <button class="gold-btn full" id="shareWhatsApp">◌ Enviar por WhatsApp</button>
+      <button class="outline-btn full" id="shareNative">↗ Compartir imagen</button>
+    </div>
+  </div>
+</div>
 
-<div class="cart" id="cart" aria-hidden="true"><div class="shade" data-close-cart></div><div class="cart-box"><button class="x" data-close-cart>×</button><div class="kicker">TU PEDIDO <i></i></div><h3>Una noche especial<br>empieza aquí.</h3><div id="cartItems"></div><div class="total"><span>Total</span><strong id="cartTotal">$0</strong></div><button class="gold-btn full" id="sendOrder">◌ Enviar pedido por WhatsApp</button></div></div>
+<div class="cart"<div class="cart" id="cart" aria-hidden="true"><div class="shade" data-close-cart></div><div class="cart-box"><button class="x" data-close-cart>×</button><div class="kicker">TU PEDIDO <i></i></div><h3>Una noche especial<br>empieza aquí.</h3><div id="cartItems"></div><div class="total"><span>Total</span><strong id="cartTotal">$0</strong></div><button class="gold-btn full" id="sendOrder">◌ Enviar pedido por WhatsApp</button></div></div>
 <button class="cart-float" id="cartButton">🛍<b id="cartCount">0</b></button>
 </body>
 </html>

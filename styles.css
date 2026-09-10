@@ -1185,3 +1185,36 @@ h2,h3{font-family:"Cormorant Garamond",serif;font-weight:600;margin:0}.story h2,
     height:calc(100vw * 784 / 2007)!important;
   }
 }
+
+/* ===== COMPARTIR CATÁLOGO ===== */
+.share-phone{margin:18px 0 12px;max-width:470px}
+.share-phone label,.share-modal-label{display:block;color:#c5beb0;font-size:10px;letter-spacing:.6px;margin-bottom:6px}
+.phone-row{display:flex;align-items:center;border:1px solid rgba(239,196,104,.18);border-radius:14px;background:#071116;overflow:hidden}
+.phone-row>span{padding:0 12px;color:#d8ba75;font-size:12px;border-right:1px solid rgba(239,196,104,.12)}
+.phone-row input{flex:1;border:0;outline:0;background:transparent;color:#eee8dc;padding:13px 12px;font-size:13px;min-width:0}
+.share-phone>small{display:block;color:#727a78;font-size:8px;margin-top:5px}
+.share-modal-card{max-height:94vh;overflow:auto}
+.catalog-share-preview{height:355px;border-radius:18px;border:1px solid rgba(239,196,104,.12);background:
+radial-gradient(circle at 50% 35%,rgba(239,174,50,.18),transparent 27%),
+linear-gradient(160deg,#0d2528,#061116);position:relative;overflow:hidden;text-align:center;padding-top:19px}
+.preview-top{font-size:8px;letter-spacing:3px;color:#d9b66d}
+.preview-title{font:600 31px/1 "Cormorant Garamond",serif;margin-top:14px;color:#efe7d8}
+.preview-title em{display:block;font:400 43px "Parisienne",cursive;color:#f4d07e}
+.preview-candles{position:absolute;left:0;right:0;bottom:60px;height:150px}
+.preview-candles:before,.preview-candles:after{content:"";position:absolute;bottom:0;width:58px;height:105px;border-radius:12px 12px 8px 8px;background:linear-gradient(90deg,#956f3b,#efca77 44%,#fff0b9 53%,#b07d3c);box-shadow:0 13px 28px rgba(0,0,0,.35)}
+.preview-candles:before{left:28%}.preview-candles:after{right:28%}
+.preview-foot{position:absolute;left:0;right:0;bottom:22px;color:#c3b080;font-size:8px;letter-spacing:1px}
+.modal-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:620px){
+  .share-phone{max-width:none}
+  .modal-actions{grid-template-columns:1fr}
+  .catalog-share-preview{height:325px}
+}
+
+.remove-item{
+  width:25px!important;height:25px!important;border-radius:50%!important;
+  border:1px solid rgba(182,103,103,.25)!important;
+  background:rgba(111,31,37,.12)!important;color:#c98787!important;
+  cursor:pointer!important;
+}
+.remove-item:hover{border-color:rgba(205,119,119,.5)!important;background:rgba(111,31,37,.22)!important}

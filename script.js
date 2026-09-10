@@ -18,7 +18,7 @@ function render(filter="todos"){
 function renderCart(){
  const box=document.getElementById("cartItems");document.getElementById("cartCount").textContent=cart.reduce((a,x)=>a+x.qty,0);
  if(!cart.length){box.innerHTML='<p style="color:#7d8482">Tu pedido está vacío.</p>';return}
- box.innerHTML=cart.map(x=>{const p=products.find(y=>y.id===x.id);return `<div class="cart-line"><div><strong>${p.n}</strong><small>${p.q} · ${money(p.p)}</small></div><div class="qty"><button data-dec="${p.id}">−</button><span>${x.qty}</span><button data-inc="${p.id}">+</button></div></div>`}).join("");
+ box.innerHTML=cart.map(x=>{const p=products.find(y=>y.id===x.id);return `<div class="cart-line"><div><strong>${p.n}</strong><small>${p.q} · ${money(p.p)}</small></div><div class="qty"><button data-dec="${p.id}">−</button><span>${x.qty}</span><button data-inc="${p.id}">+</button><button class="remove-item" data-remove="${p.id}" aria-label="Eliminar ${p.n}">×</button></div></div>`}).join("");
  const total=cart.reduce((a,x)=>a+products.find(p=>p.id===x.id).p*x.qty,0);document.getElementById("cartTotal").textContent=money(total);
 }
 function save(){localStorage.setItem("ld_cart",JSON.stringify(cart));renderCart()}
@@ -417,4 +417,171 @@ render();renderCart();
       }
     }
   }, {passive:false});
+})();
+
+/* ===== CART: ELIMINAR PRODUCTO COMPLETO ===== */
+(function(){
+  // Delegated removal from any cart item.
+  document.addEventListener("click", e=>{
+    const remove=e.target.closest("[data-remove]");
+    if(!remove)return;
+    const id=Number(remove.dataset.remove);
+    cart=cart.filter(x=>x.id!==id);
+    localStorage.setItem("ld_cart",JSON.stringify(cart));
+    if(typeof renderCart==="function") renderCart();
+  });
+})();
+
+/* ===== COMPARTIR: CATÁLOGO DISPONIBLE + NÚMERO OPCIONAL ===== */
+(function(){
+  const phoneFromPage=document.getElementById("sharePhone");
+  const phoneFromModal=document.getElementById("shareModalPhone");
+  const shareBtn=document.getElementById("shareBtn");
+  const nativeBtn=document.getElementById("shareNative");
+  const waBtn=document.getElementById("shareWhatsApp");
+
+  const available=()=>{
+    try{
+      const stored=JSON.parse(localStorage.getItem("luz_diciembre_products_v2")||"null");
+      if(Array.isArray(stored)&&stored.length)return stored.filter(p=>p.available!==false);
+    }catch(e){}
+    return Array.isArray(products)?products.filter(p=>p.available!==false):[];
+  };
+
+  function normalizePhone(raw){
+    const digits=(raw||"").replace(/\D/g,"");
+    if(!digits)return "";
+    return digits.length===10?digits:"";
+  }
+
+  function buildCatalogCanvas(){
+    const list=available();
+    const canvas=document.createElement("canvas");
+    canvas.width=1080;canvas.height=1920;
+    const ctx=canvas.getContext("2d");
+
+    const bg=ctx.createLinearGradient(0,0,0,1920);
+    bg.addColorStop(0,"#061116");bg.addColorStop(.55,"#0b1d21");bg.addColorStop(1,"#1b110d");
+    ctx.fillStyle=bg;ctx.fillRect(0,0,1080,1920);
+
+    // Warm ambient glow
+    const rg=ctx.createRadialGradient(540,640,40,540,640,520);
+    rg.addColorStop(0,"rgba(240,177,57,.24)");rg.addColorStop(1,"rgba(240,177,57,0)");
+    ctx.fillStyle=rg;ctx.fillRect(0,0,1080,1300);
+
+    for(let i=0;i<30;i++){
+      ctx.fillStyle=`rgba(239,196,104,${.04+Math.random()*.10})`;
+      ctx.beginPath();ctx.arc(Math.random()*1080,Math.random()*1900,1+Math.random()*4,0,Math.PI*2);ctx.fill();
+    }
+
+    ctx.textAlign="center";
+    ctx.fillStyle="#dfb96d";ctx.font="600 26px DM Sans";ctx.fillText("LUZ DE DICIEMBRE",540,145);
+    ctx.font="500 18px DM Sans";ctx.fillStyle="#a68d63";ctx.fillText("7 DE DICIEMBRE · TRADICIÓN QUE ILUMINA",540,182);
+    ctx.font="400 78px Cormorant Garamond";ctx.fillStyle="#f1e9dc";ctx.fillText("Catálogo",540,300);
+    ctx.font="400 92px Parisienne";ctx.fillStyle="#f1cc78";ctx.fillText("disponible.",540,390);
+
+    const cols=2, cardW=450, cardH=330, gap=34, startX=90, startY=470;
+    list.slice(0,8).forEach((p,i)=>{
+      const col=i%cols,row=Math.floor(i/cols);
+      const x=startX+col*(cardW+gap),y=startY+row*(cardH+gap);
+      ctx.fillStyle="rgba(7,19,24,.82)";ctx.roundRect(x,y,cardW,cardH,24);ctx.fill();
+      ctx.strokeStyle="rgba(239,196,104,.20)";ctx.lineWidth=2;ctx.roundRect(x,y,cardW,cardH,24);ctx.stroke();
+
+      // Candle illustration
+      const cx=x+cardW/2,cy=y+125;
+      ctx.shadowColor="rgba(255,175,46,.34)";ctx.shadowBlur=28;
+      const cg=ctx.createLinearGradient(cx-45,cy-70,cx+45,cy+90);
+      cg.addColorStop(0,"#96713d");cg.addColorStop(.4,"#efd080");cg.addColorStop(.52,"#fff0ba");cg.addColorStop(1,"#ad7b3b");
+      ctx.fillStyle=cg;ctx.roundRect(cx-43,cy-40,86,125,13);ctx.fill();ctx.shadowBlur=0;
+      ctx.fillStyle="#ffab37";ctx.beginPath();ctx.ellipse(cx,cy-61,15,30,0,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle="#fff5ca";ctx.beginPath();ctx.ellipse(cx,cy-62,7,16,0,0,Math.PI*2);ctx.fill();
+
+      ctx.fillStyle="#eee7da";ctx.font="600 30px Cormorant Garamond";ctx.fillText((p.n||"Velita").slice(0,25),cx,y+195);
+      ctx.fillStyle="#e6c77d";ctx.font="600 24px DM Sans";ctx.fillText(money(p.p||0),cx,y+230);
+      ctx.fillStyle="#838b88";ctx.font="400 17px DM Sans";ctx.fillText((p.q||"1 unidad"),cx,y+257);
+    });
+
+    ctx.fillStyle="#bca276";ctx.font="400 19px DM Sans";ctx.fillText("Pedidos por WhatsApp · 321 769 1827",540,1875);
+    ctx.fillStyle="#6f7775";ctx.font="400 15px DM Sans";ctx.fillText("Compartir esta imagen ayuda a que nuestro emprendimiento llegue más lejos ♡",540,1905);
+
+    return new Promise(resolve=>canvas.toBlob(blob=>resolve({blob,canvas}),"image/png"));
+  }
+
+  async function openShare(){
+    const {blob}=await buildCatalogCanvas();
+    window._luzCatalogBlob=blob;
+    const modal=document.getElementById("shareModal");
+    if(modal){modal.classList.add("open");modal.setAttribute("aria-hidden","false");}
+    if(phoneFromPage && phoneFromPage.value && phoneFromModal)phoneFromModal.value=phoneFromPage.value;
+  }
+
+  shareBtn?.addEventListener("click",openShare);
+
+  nativeBtn?.addEventListener("click",async()=>{
+    const blob=window._luzCatalogBlob;
+    if(!blob){await openShare();}
+    const file=new File([window._luzCatalogBlob],"catalogo-luz-de-diciembre.png",{type:"image/png"});
+    try{
+      if(navigator.share && (!navigator.canShare || navigator.canShare({files:[file]}))){
+        await navigator.share({
+          title:"Luz de Diciembre",
+          text:"Catálogo disponible · 7 de diciembre 🕯️✨",
+          files:[file]
+        });
+      }else{
+        const url=URL.createObjectURL(file);
+        const a=document.createElement("a");a.href=url;a.download="catalogo-luz-de-diciembre.png";a.click();
+        setTimeout(()=>URL.revokeObjectURL(url),1000);
+        alert("La imagen fue preparada. Puedes compartirla desde la galería de tu celular.");
+      }
+    }catch(err){console.log("Compartir cancelado",err);}
+  });
+
+  waBtn?.addEventListener("click",async()=>{
+    const raw=(phoneFromModal?.value || phoneFromPage?.value || "").replace(/\D/g,"");
+    const ten=normalizePhone(raw);
+    const list=available();
+    const names=list.slice(0,8).map(p=>`• ${p.n} — ${money(p.p||0)}`).join("\n");
+    const message=`Hola 👋 Te comparto nuestro catálogo de velitas disponibles para el 7 de diciembre 🕯️✨\n\n${names}\n\nSi te gusta alguna, escríbeme y te ayudo con el pedido.\n\nLuz de Diciembre`;
+    if(ten){
+      // Direct chat to the exact recipient entered by the user.
+      window.open(`https://wa.me/57${ten}?text=${encodeURIComponent(message)}`,"_blank");
+    }else{
+      window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(message)}`,"_blank");
+    }
+  });
+})();
+
+/* ===== ADMIN MÓVIL: MÉTODO MÁS CONFIABLE ===== */
+(function(){
+  const logo=document.getElementById("brandLogo");
+  const adminButton=document.getElementById("adminOpen");
+  if(!logo || !adminButton)return;
+
+  // 5 taps in 1.5 seconds. pointerup avoids touch/click double counting.
+  let taps=0,last=0,timer=null;
+  const reset=()=>{taps=0;if(timer)clearTimeout(timer);timer=null;};
+  logo.addEventListener("pointerup",e=>{
+    if(window.innerWidth>900 || e.pointerType==="mouse")return;
+    e.preventDefault();e.stopPropagation();
+    const now=Date.now();
+    if(now-last<90)return;
+    last=now;taps++;
+    if(timer)clearTimeout(timer);
+    timer=setTimeout(reset,1500);
+    if(taps>=5){
+      reset();
+      const pin=prompt("Acceso privado");
+      if(pin==="0712")adminButton.click();
+    }
+  },{passive:false});
+
+  // Owner shortcut: append #admin to the URL, then PIN. Useful when touch gesture is inconvenient.
+  window.addEventListener("load",()=>{
+    if(location.hash==="#admin"){
+      const pin=prompt("Acceso privado");
+      if(pin==="0712")adminButton.click();
+      history.replaceState(null,"",location.pathname+location.search);
+    }
+  });
 })();
