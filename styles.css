@@ -550,262 +550,149 @@ h2,h3{font-family:"Cormorant Garamond",serif;font-weight:600;margin:0}.story h2,
   .pdf-download{width:100%;justify-content:center}
 }
 
-/* ===== RESPONSIVE FINAL: CELULAR INDEPENDIENTE, PC SIN CAMBIOS ===== */
-
-/* Never expose administrator in the public header. */
-.admin-trigger{display:none!important}
-
-/* Mobile-specific header/menu state, activated by media OR JS device class. */
-@media (max-width: 900px), (pointer: coarse) and (hover: none){
-  html,body{
-    width:100%;
-    max-width:100%;
-    overflow-x:hidden;
-  }
-
-  .header{
-    width:100%!important;
-    height:64px!important;
-    padding:0 16px!important;
-  }
-
-  .header > nav{
-    display:none!important;
-  }
-
-  .header > nav.mobile-open{
-    display:flex!important;
-    position:absolute!important;
-    top:58px!important;
-    right:12px!important;
-    left:auto!important;
-    width:min(285px,calc(100vw - 24px))!important;
-    padding:10px!important;
-    flex-direction:column!important;
-    align-items:stretch!important;
-    gap:3px!important;
-    background:rgba(7,19,24,.98)!important;
-    border:1px solid rgba(239,196,104,.18)!important;
-    border-radius:16px!important;
-    box-shadow:0 22px 50px rgba(0,0,0,.4)!important;
-    backdrop-filter:blur(13px)!important;
-  }
-  .header > nav.mobile-open a{
-    color:#e5dfd3!important;
-    text-decoration:none!important;
-    padding:12px 11px!important;
-    border-radius:10px!important;
-  }
-  .header > nav.mobile-open a:hover{
-    background:rgba(239,196,104,.06)!important;
-    color:#f4d486!important;
-  }
-  .header > nav.mobile-open button{
-    width:100%!important;
-    margin-top:4px!important;
-  }
-
-  .header .menu{
-    display:flex!important;
-    width:40px!important;
-    height:40px!important;
-    align-items:center!important;
-    justify-content:center!important;
-    border:1px solid rgba(239,196,104,.17)!important;
-    border-radius:50%!important;
-    color:#eee8dc!important;
-    background:transparent!important;
-  }
-
-  /* The desktop composition is NOT squeezed into the phone.
-     Show only the photographic right side of the approved artwork, then
-     present the interactive copy once below it. */
-  .hero{
-    width:100%!important;
-    max-width:none!important;
-    min-height:0!important;
-    aspect-ratio:auto!important;
-    height:auto!important;
-    overflow:hidden!important;
-  }
-
-  .hero-image{
-    position:relative!important;
-    inset:auto!important;
-    width:100%!important;
-    height:270px!important;
-    background-size:auto 270px!important;
-    background-position:right center!important;
-    background-repeat:no-repeat!important;
-  }
-
-  .real-flame-pro,
-  .hotspot{
-    display:none!important;
-  }
-
-  .mobile-hero-copy{
-    display:block!important;
-    position:relative!important;
-    margin:0!important;
-    padding:29px 18px 32px!important;
-    background:
-      radial-gradient(circle at 82% 0,rgba(239,184,67,.08),transparent 30%),
-      #061116!important;
-  }
-  .mobile-hero-copy .kicker{
-    font-size:9px!important;
-    letter-spacing:2.5px!important;
-  }
-  .mobile-hero-copy h1{
-    font:600 49px/.86 "Cormorant Garamond",serif!important;
-    letter-spacing:-.6px!important;
-    margin:11px 0 15px!important;
-  }
-  .mobile-hero-copy h1 em{
-    font:400 66px/.74 "Parisienne",cursive!important;
-    color:#f7d791!important;
-  }
-  .mobile-hero-copy p{
-    margin:0!important;
-    max-width:390px!important;
-    color:#c8c4bb!important;
-    font-size:14px!important;
-    line-height:1.55!important;
-  }
-  .mobile-actions{
-    display:grid!important;
-    grid-template-columns:1fr!important;
-    gap:9px!important;
-    margin-top:18px!important;
-  }
-  .mobile-actions .gold-btn,
-  .mobile-actions .outline-btn{
-    width:100%!important;
-    min-height:50px!important;
-    display:flex!important;
-    align-items:center!important;
-    justify-content:center!important;
-  }
-
-  .story,
-  .catalog,
-  .share{
-    width:calc(100% - 28px)!important;
-  }
-  .story{
-    grid-template-columns:1fr!important;
-    gap:23px!important;
-    padding:37px 0 45px!important;
-  }
-  .story-art{
-    height:305px!important;
-  }
-  .products{
-    grid-template-columns:1fr!important;
-  }
-  .section-title{
-    align-items:flex-start!important;
-    flex-direction:column!important;
-  }
-  .catalog-tools{
-    width:100%!important;
-    display:flex!important;
-    flex-direction:column!important;
-    gap:8px!important;
-  }
-  .catalog-tools .pdf-download,
-  .catalog-tools .text-link{
-    width:100%!important;
-    justify-content:center!important;
-    text-align:center!important;
-  }
-  .filters{
-    overflow-x:auto!important;
-    flex-wrap:nowrap!important;
-    padding-bottom:4px!important;
-  }
-  .filter{
-    white-space:nowrap!important;
-    flex:0 0 auto!important;
-  }
-  .share{
-    grid-template-columns:1fr!important;
-    margin-bottom:45px!important;
-  }
-  .share-copy{
-    padding:28px 20px!important;
-  }
-  .share-art{
-    min-height:240px!important;
-  }
-  .footer{
-    width:calc(100% - 28px)!important;
-    padding-bottom:95px!important;
-    flex-wrap:wrap!important;
-    gap:6px!important;
-  }
+/* ===== SECCIÓN HISTORIA: MÁS EMOCIONAL Y CONECTADA CON LA MARCA ===== */
+.story{
+  grid-template-columns:.95fr 1.05fr;
+  gap:46px;
+  align-items:center;
+  padding:54px 0 60px;
 }
-
-@media (max-width:620px), (pointer: coarse) and (hover: none){
-  .hero-image{
-    height:235px!important;
-    background-size:auto 235px!important;
-    background-position:right center!important;
-  }
-  .mobile-hero-copy{
-    padding:24px 17px 30px!important;
-  }
-  .mobile-hero-copy h1{
-    font-size:46px!important;
-  }
-  .mobile-hero-copy h1 em{
-    font-size:62px!important;
-  }
-  .mobile-hero-copy p{
-    font-size:13px!important;
-  }
+.story-art{
+  height:400px;
+  position:relative;
+  overflow:hidden;
+  border-radius:25px;
+  border:1px solid rgba(239,196,104,.20);
+  background:
+    radial-gradient(circle at 50% 43%,rgba(247,180,56,.20),transparent 27%),
+    radial-gradient(circle at 22% 83%,rgba(16,76,54,.22),transparent 28%),
+    linear-gradient(155deg,#0d2427,#071116);
 }
-
-.mobile-device .header > nav{display:none!important}
-.mobile-device .header .menu{display:flex!important}
-.mobile-device .hero{width:100%!important;max-width:none!important;min-height:0!important;aspect-ratio:auto!important;height:auto!important}
-.mobile-device .hero-image{position:relative!important;height:270px!important;background-size:auto 270px!important;background-position:right center!important}
-.mobile-device .hero-hotspot,.mobile-device .real-flame-pro{display:none!important}
-.mobile-device .mobile-hero-copy{display:block!important;position:relative!important;margin:0!important}
+.story-art:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at 80% 22%,rgba(90,25,35,.14),transparent 22%),
+    radial-gradient(circle at 55% 54%,rgba(255,191,70,.10),transparent 30%);
+}
+.story-art-glow{
+  position:absolute;
+  width:280px;
+  height:280px;
+  left:50%;
+  top:48%;
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(248,181,55,.18),rgba(248,160,35,.06) 30%,transparent 68%);
+  filter:blur(10px);
+  animation:storyGlow 2.7s ease-in-out infinite;
+}
+.story-art>span{
+  z-index:5;
+  top:20px;
+  left:20px;
+}
+.story-candle{
+  z-index:3;
+  width:132px;
+  height:202px;
+  bottom:48px;
+  background:linear-gradient(90deg,#9f743d,#efca77 40%,#fff0b8 53%,#b4813e);
+  box-shadow:
+    inset 14px 0 20px rgba(255,255,255,.13),
+    inset -18px 0 23px rgba(74,37,5,.16),
+    0 20px 45px rgba(0,0,0,.35);
+}
+.story-candle:before,
+.story-candle:after{
+  content:"";
+  position:absolute;
+  top:4px;
+  border-radius:0 0 11px 11px;
+  background:linear-gradient(180deg,#f2d489,#b88c4c);
+}
+.story-candle:before{left:23px;width:17px;height:58px}
+.story-candle:after{right:23px;width:19px;height:80px}
+.story-flame{
+  bottom:232px;
+  z-index:5;
+  width:34px;
+  height:63px;
+  background:
+    radial-gradient(circle at 50% 76%,#fff9d8 0 14%,#ffd57e 31%,#ff942b 56%,transparent 75%);
+  filter:drop-shadow(0 0 12px rgba(255,176,49,.85));
+  animation:flicker 1.05s ease-in-out infinite;
+}
+.story-copy>p+p{margin-top:9px}
+.story-copy strong{color:#e7ddca;font-weight:600}
+.story-values{
+  display:grid;
+  gap:9px;
+  margin-top:22px;
+  max-width:560px;
+}
+.story-value{
+  display:flex;
+  align-items:center;
+  gap:11px;
+  padding:9px 0;
+  border-top:1px solid rgba(239,196,104,.08);
+}
+.story-value b{
+  width:30px;height:30px;flex:0 0 30px;
+  border:1px solid rgba(239,196,104,.18);
+  border-radius:50%;
+  display:grid;place-items:center;
+  color:#efca7e;font-weight:500;
+}
+.story-value strong{
+  display:block;
+  color:#ded6c7;
+  font-size:11px;
+}
+.story-value small{
+  display:block;
+  color:#757c79;
+  font-size:9px;
+  margin-top:2px;
+}
+@keyframes storyGlow{
+  0%,100%{opacity:.65;transform:translate(-50%,-50%) scale(.95)}
+  50%{opacity:1;transform:translate(-50%,-50%) scale(1.08)}
+}
+@media(max-width:900px){
+  .story{grid-template-columns:1fr;gap:25px;padding:42px 0 48px}
+  .story-art{height:350px}
+}
 @media(max-width:620px){
-  .mobile-device .hero-image{height:235px!important;background-size:auto 235px!important}
+  .story{padding:35px 0 43px}
+  .story-art{height:310px;border-radius:22px}
+  .story-candle{width:112px;height:172px;bottom:42px}
+  .story-flame{bottom:198px;width:30px;height:55px}
+  .story-copy>p{font-size:13px}
+  .story-values{margin-top:17px}
 }
 
-/* ===== PORTADA CELULAR: SOLO ENCUADRE ===== */
+/* ===== VELA DE "MÁS QUE VELAS": ALINEACIÓN EN CELULAR ===== */
+.story-art{
+  overflow:hidden !important;
+}
+.story-label{
+  z-index:20 !important;
+}
 @media (max-width:620px){
-  .hero-image{
-    height:250px !important;
-    background-size:auto 250px !important;
-    background-position:64% center !important;
-    background-repeat:no-repeat !important;
+  .story-art{
+    height:320px !important;
   }
-}
-
-/* ===== PORTADA CELULAR: IMAGEN COMPLETA SIN RECORTE ===== */
-@media (max-width: 620px){
-  .hero{
-    width:100% !important;
-    max-width:none !important;
-    min-height:0 !important;
-    height:auto !important;
-    aspect-ratio:auto !important;
-    overflow:visible !important;
-    background:#061116 !important;
+  .story-candle{
+    bottom:28px !important;
   }
-  .hero-image{
-    position:relative !important;
-    inset:auto !important;
-    width:100% !important;
-    height:auto !important;
-    aspect-ratio:2007 / 784 !important;
-    background-size:100% 100% !important;
-    background-position:center center !important;
-    background-repeat:no-repeat !important;
+  .story-wick{
+    bottom:199px !important;
+  }
+  .story-flame{
+    bottom:214px !important;
+    z-index:10 !important;
   }
 }
