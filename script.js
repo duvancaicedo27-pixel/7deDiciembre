@@ -16,11 +16,16 @@ function render(filter="todos"){
  document.getElementById("products").innerHTML=list.map(p=>`<article class="product"><div class="product-image"><div class="p-flame"></div><div class="p-candle"></div></div><div class="product-info"><div class="product-head"><h3>${p.n}</h3><span class="tag">${p.t}</span></div><p class="desc">${p.q} · ${p.d}</p><div class="price">${money(p.p)}</div><div class="actions"><button class="add" data-add="${p.id}">+ Agregar</button><button class="buy" data-buy="${p.id}">WhatsApp</button></div></div></article>`).join("");
 }
 function renderCart(){
- const box=document.getElementById("cartItems");document.getElementById("cartCount").textContent=cart.reduce((a,x)=>a+x.qty,0);
+ const box=document.getElementById("cartItems");
+ const count=cart.reduce((a,x)=>a+x.qty,0);
+ const total=cart.reduce((a,x)=>{const p=products.find(y=>y.id===x.id);return a+(p?p.p*x.qty:0)},0);
+ document.getElementById("cartCount").textContent=count;
+ if(document.getElementById("cartItemsCount")) document.getElementById("cartItemsCount").textContent=count;
+ document.getElementById("cartTotal").textContent=money(total);
  if(!cart.length){box.innerHTML='<p style="color:#7d8482">Tu pedido está vacío.</p>';return}
- box.innerHTML=cart.map(x=>{const p=products.find(y=>y.id===x.id);return `<div class="cart-line"><div><strong>${p.n}</strong><small>${p.q} · ${money(p.p)}</small></div><div class="qty"><button data-dec="${p.id}">−</button><span>${x.qty}</span><button data-inc="${p.id}">+</button><button class="remove-item" data-remove="${p.id}" aria-label="Eliminar ${p.n}">×</button></div></div>`}).join("");
- const total=cart.reduce((a,x)=>a+products.find(p=>p.id===x.id).p*x.qty,0);document.getElementById("cartTotal").textContent=money(total);
+ box.innerHTML=cart.map(x=>{const p=products.find(y=>y.id===x.id);if(!p)return '';const subtotal=p.p*x.qty;return `<div class="cart-line"><div><strong>${p.n}</strong><small>${p.q} · ${money(p.p)} c/u · Subtotal ${money(subtotal)}</small></div><div class="qty"><button data-dec="${p.id}" aria-label="Disminuir cantidad">−</button><span>${x.qty}</span><button data-inc="${p.id}" aria-label="Aumentar cantidad">+</button><button class="remove-item" data-remove="${p.id}" aria-label="Eliminar ${p.n}">×</button></div></div>`}).join("");
 }
+
 function save(){localStorage.setItem("ld_cart",JSON.stringify(cart));renderCart()}
 function add(id){const f=cart.find(x=>x.id===id);f?f.qty++:cart.push({id,qty:1});save()}
 document.addEventListener("click",e=>{
@@ -37,13 +42,20 @@ document.querySelectorAll(".filter").forEach(x=>x.addEventListener("click",()=>{
 ["waHeader","waCatalog","heroWa","mobileWa"].forEach(id=>document.getElementById(id)?.addEventListener("click",()=>openWA("Hola 👋 Quiero información sobre las velitas del 7 de diciembre.")));
 document.getElementById("wishHotspot").onclick=()=>toggle("wishModal",true);
 document.getElementById("wishSend").onclick=()=>{const v=document.getElementById("wishInput").value.trim();if(v){alert("✨ "+v+"\n\nTu deseo queda encendido por esta noche.");toggle("wishModal",false)}};
-document.getElementById("shareBtn").onclick=()=>toggle("shareModal",true);
 document.getElementById("shareWhatsApp").onclick=()=>openWA("Hola 👋 Te comparto una velita de Luz de Diciembre para este 7 de diciembre 🕯️✨.");
 document.getElementById("cartButton").onclick=()=>toggle("cart",true);
 document.getElementById("sendOrder").onclick=()=>{
- if(!cart.length)return openWA("Hola 👋 Quiero información sobre las velitas del 7 de diciembre.");
- let total=0;const lines=cart.map(x=>{const p=products.find(y=>y.id===x.id);total+=p.p*x.qty;return `• ${x.qty} × ${p.n}`});
- openWA(`Hola 👋 Quiero hacer este pedido:\n\n${lines.join("\n")}\n\n💰 Total: ${money(total)}\n\n¿Me confirmas disponibilidad y entrega?`);
+ if(!cart.length)return openWA("Hola 👋 Mi carrito está vacío. Quiero conocer las velitas disponibles para el 7 de diciembre 🕯️✨.");
+ let total=0;
+ const lines=cart.map(x=>{
+   const p=products.find(y=>y.id===x.id);
+   if(!p)return "";
+   const subtotal=p.p*x.qty;
+   total+=subtotal;
+   return `• ${p.n}\n  Cantidad: ${x.qty}\n  Presentación: ${p.q}\n  Valor unitario: ${money(p.p)}\n  Subtotal: ${money(subtotal)}`;
+ }).filter(Boolean);
+ const count=cart.reduce((a,x)=>a+x.qty,0);
+ openWA(`Hola 👋 Quiero hacer este pedido por WhatsApp:\n\n${lines.join("\n\n")}\n\n📦 Total de artículos: ${count}\n💰 Total del pedido: ${money(total)}\n\n¿Me confirmas disponibilidad y entrega?`);
 };
 document.getElementById("menu").onclick=()=>alert("En la versión móvil usa la barra y los botones de la página.");
 render();renderCart();
@@ -432,11 +444,12 @@ render();renderCart();
   });
 })();
 
-/* ===== COMPARTIR: CATÁLOGO DISPONIBLE + NÚMERO OPCIONAL ===== */
+/* ===== COMPARTIR: CATÁLOGO DISPONIBLE + ESTADO DE WHATSAPP ===== */
 (function(){
   const phoneFromPage=document.getElementById("sharePhone");
   const phoneFromModal=document.getElementById("shareModalPhone");
   const shareBtn=document.getElementById("shareBtn");
+  const numberBtn=document.getElementById("shareToNumberBtn");
   const nativeBtn=document.getElementById("shareNative");
   const waBtn=document.getElementById("shareWhatsApp");
 
@@ -450,7 +463,6 @@ render();renderCart();
 
   function normalizePhone(raw){
     const digits=(raw||"").replace(/\D/g,"");
-    if(!digits)return "";
     return digits.length===10?digits:"";
   }
 
@@ -464,7 +476,6 @@ render();renderCart();
     bg.addColorStop(0,"#061116");bg.addColorStop(.55,"#0b1d21");bg.addColorStop(1,"#1b110d");
     ctx.fillStyle=bg;ctx.fillRect(0,0,1080,1920);
 
-    // Warm ambient glow
     const rg=ctx.createRadialGradient(540,640,40,540,640,520);
     rg.addColorStop(0,"rgba(240,177,57,.24)");rg.addColorStop(1,"rgba(240,177,57,0)");
     ctx.fillStyle=rg;ctx.fillRect(0,0,1080,1300);
@@ -480,14 +491,16 @@ render();renderCart();
     ctx.font="400 78px Cormorant Garamond";ctx.fillStyle="#f1e9dc";ctx.fillText("Catálogo",540,300);
     ctx.font="400 92px Parisienne";ctx.fillStyle="#f1cc78";ctx.fillText("disponible.",540,390);
 
+    if(!list.length){
+      ctx.fillStyle="#c7beb0";ctx.font="400 28px DM Sans";ctx.fillText("En este momento no hay productos disponibles.",540,760);
+    }
+
     const cols=2, cardW=450, cardH=330, gap=34, startX=90, startY=470;
     list.slice(0,8).forEach((p,i)=>{
       const col=i%cols,row=Math.floor(i/cols);
       const x=startX+col*(cardW+gap),y=startY+row*(cardH+gap);
       ctx.fillStyle="rgba(7,19,24,.82)";ctx.roundRect(x,y,cardW,cardH,24);ctx.fill();
       ctx.strokeStyle="rgba(239,196,104,.20)";ctx.lineWidth=2;ctx.roundRect(x,y,cardW,cardH,24);ctx.stroke();
-
-      // Candle illustration
       const cx=x+cardW/2,cy=y+125;
       ctx.shadowColor="rgba(255,175,46,.34)";ctx.shadowBlur=28;
       const cg=ctx.createLinearGradient(cx-45,cy-70,cx+45,cy+90);
@@ -495,46 +508,53 @@ render();renderCart();
       ctx.fillStyle=cg;ctx.roundRect(cx-43,cy-40,86,125,13);ctx.fill();ctx.shadowBlur=0;
       ctx.fillStyle="#ffab37";ctx.beginPath();ctx.ellipse(cx,cy-61,15,30,0,0,Math.PI*2);ctx.fill();
       ctx.fillStyle="#fff5ca";ctx.beginPath();ctx.ellipse(cx,cy-62,7,16,0,0,Math.PI*2);ctx.fill();
-
       ctx.fillStyle="#eee7da";ctx.font="600 30px Cormorant Garamond";ctx.fillText((p.n||"Velita").slice(0,25),cx,y+195);
       ctx.fillStyle="#e6c77d";ctx.font="600 24px DM Sans";ctx.fillText(money(p.p||0),cx,y+230);
       ctx.fillStyle="#838b88";ctx.font="400 17px DM Sans";ctx.fillText((p.q||"1 unidad"),cx,y+257);
     });
 
-    ctx.fillStyle="#bca276";ctx.font="400 19px DM Sans";ctx.fillText("Pedidos por WhatsApp · 321 769 1827",540,1875);
+    ctx.fillStyle="#bca276";ctx.font="400 18px DM Sans";ctx.fillText("Catálogo actualizado · Productos disponibles",540,1875);
     ctx.fillStyle="#6f7775";ctx.font="400 15px DM Sans";ctx.fillText("Compartir esta imagen ayuda a que nuestro emprendimiento llegue más lejos ♡",540,1905);
 
     return new Promise(resolve=>canvas.toBlob(blob=>resolve({blob,canvas}),"image/png"));
   }
 
-  async function openShare(){
+  async function prepareCatalog(){
     const {blob}=await buildCatalogCanvas();
     window._luzCatalogBlob=blob;
-    const modal=document.getElementById("shareModal");
-    if(modal){modal.classList.add("open");modal.setAttribute("aria-hidden","false");}
-    if(phoneFromPage && phoneFromPage.value && phoneFromModal)phoneFromModal.value=phoneFromPage.value;
+    return blob;
   }
 
-  shareBtn?.addEventListener("click",openShare);
-
-  nativeBtn?.addEventListener("click",async()=>{
-    const blob=window._luzCatalogBlob;
-    if(!blob){await openShare();}
-    const file=new File([window._luzCatalogBlob],"catalogo-luz-de-diciembre.png",{type:"image/png"});
+  async function shareCatalogImage(){
+    const blob=window._luzCatalogBlob || await prepareCatalog();
+    const file=new File([blob],"catalogo-luz-de-diciembre.png",{type:"image/png"});
     try{
       if(navigator.share && (!navigator.canShare || navigator.canShare({files:[file]}))){
-        await navigator.share({
-          title:"Luz de Diciembre",
-          text:"Catálogo disponible · 7 de diciembre 🕯️✨",
-          files:[file]
-        });
-      }else{
-        const url=URL.createObjectURL(file);
-        const a=document.createElement("a");a.href=url;a.download="catalogo-luz-de-diciembre.png";a.click();
-        setTimeout(()=>URL.revokeObjectURL(url),1000);
-        alert("La imagen fue preparada. Puedes compartirla desde la galería de tu celular.");
+        await navigator.share({title:"Luz de Diciembre",text:"Catálogo disponible · 7 de diciembre 🕯️✨",files:[file]});
+        return true;
       }
-    }catch(err){console.log("Compartir cancelado",err);}
+      const url=URL.createObjectURL(file);
+      const a=document.createElement("a");a.href=url;a.download="catalogo-luz-de-diciembre.png";a.click();
+      setTimeout(()=>URL.revokeObjectURL(url),1000);
+      alert("El catálogo fue preparado. En tu celular, abre la imagen y elige WhatsApp → Mi estado.");
+      return false;
+    }catch(err){
+      if(err?.name!=="AbortError")console.log("Compartir cancelado",err);
+      return false;
+    }
+  }
+
+  shareBtn?.addEventListener("click",shareCatalogImage);
+  nativeBtn?.addEventListener("click",shareCatalogImage);
+
+  numberBtn?.addEventListener("click",async()=>{
+    const raw=phoneFromPage?.value || "";
+    const ten=normalizePhone(raw);
+    if(!ten){alert("Escribe un número de celular de 10 dígitos para enviar el catálogo.");phoneFromPage?.focus();return}
+    const list=available();
+    const names=list.slice(0,8).map(p=>`• ${p.n} — ${money(p.p||0)}`).join("\n");
+    const message=`Hola 👋 Te comparto nuestro catálogo de velitas disponibles para el 7 de diciembre 🕯️✨\n\n${names||"En este momento no hay productos disponibles."}\n\nLuz de Diciembre`;
+    window.open(`https://wa.me/57${ten}?text=${encodeURIComponent(message)}`,"_blank");
   });
 
   waBtn?.addEventListener("click",async()=>{
@@ -542,12 +562,11 @@ render();renderCart();
     const ten=normalizePhone(raw);
     const list=available();
     const names=list.slice(0,8).map(p=>`• ${p.n} — ${money(p.p||0)}`).join("\n");
-    const message=`Hola 👋 Te comparto nuestro catálogo de velitas disponibles para el 7 de diciembre 🕯️✨\n\n${names}\n\nSi te gusta alguna, escríbeme y te ayudo con el pedido.\n\nLuz de Diciembre`;
+    const message=`Hola 👋 Te comparto nuestro catálogo de velitas disponibles para el 7 de diciembre 🕯️✨\n\n${names||"En este momento no hay productos disponibles."}\n\nLuz de Diciembre`;
     if(ten){
-      // Direct chat to the exact recipient entered by the user.
       window.open(`https://wa.me/57${ten}?text=${encodeURIComponent(message)}`,"_blank");
     }else{
-      window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(message)}`,"_blank");
+      alert("Escribe primero el número de WhatsApp de la persona.");
     }
   });
 })();

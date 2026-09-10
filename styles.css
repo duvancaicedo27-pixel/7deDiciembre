@@ -1218,3 +1218,10 @@ linear-gradient(160deg,#0d2528,#061116);position:relative;overflow:hidden;text-a
   cursor:pointer!important;
 }
 .remove-item:hover{border-color:rgba(205,119,119,.5)!important;background:rgba(111,31,37,.22)!important}
+
+/* ===== AJUSTES CARRITO + COMPARTIR ===== */
+.cart-summary{display:grid;grid-template-columns:1fr 1fr;gap:10px;border-top:1px solid rgba(239,196,104,.1);padding-top:15px;margin-top:14px}
+.cart-summary>div{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid rgba(239,196,104,.08);border-radius:12px;padding:10px 11px}
+.cart-summary span{font-size:10px;color:#8d9491}
+.cart-summary strong{color:#efcf88;font-size:13px}
+#shareToNumberBtn{margin-top:8px;width:100%}

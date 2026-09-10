@@ -96,13 +96,14 @@
       <label for="sharePhone">Número de WhatsApp de la persona</label>
       <div class="phone-row">
         <span>+57</span>
-        <input id="sharePhone" inputmode="numeric" maxlength="10" placeholder="321 769 1827" aria-label="Número de WhatsApp">
+        <input id="sharePhone" inputmode="numeric" maxlength="10" placeholder="Escribe el número" aria-label="Número de WhatsApp">
       </div>
       <small>Opcional. Déjalo vacío para abrir la ventana de compartir.</small>
     </div>
 
-    <button class="gold-btn" id="shareBtn">Compartir catálogo disponible ↗</button>
-    <small>La imagen se prepara con los productos disponibles en la página.</small>
+    <button class="gold-btn" id="shareBtn">Publicar catálogo en Estado de WhatsApp ↗</button>
+    <button class="outline-btn" id="shareToNumberBtn">Enviar catálogo a este número</button>
+    <small>En celular se abrirá la ventana de compartir para elegir WhatsApp y luego “Mi estado”.</small>
   </div>
   <div class="share-art">
     <div class="gift">Gracias<br>por ser parte<br>de esta luz ♡</div>
@@ -185,7 +186,7 @@
       <div class="preview-foot">Productos disponibles · Luz de Diciembre</div>
     </div>
     <label class="share-modal-label" for="shareModalPhone">Enviar a un número específico (opcional)</label>
-    <div class="phone-row modal-phone"><span>+57</span><input id="shareModalPhone" inputmode="numeric" maxlength="10" placeholder="321 769 1827"></div>
+    <div class="phone-row modal-phone"><span>+57</span><input id="shareModalPhone" inputmode="numeric" maxlength="10" placeholder="Escribe el número"></div>
     <p>La imagen reúne automáticamente las velitas disponibles. En celular puedes compartirla por WhatsApp y elegir el contacto o tu Estado.</p>
     <div class="modal-actions">
       <button class="gold-btn full" id="shareWhatsApp">◌ Enviar por WhatsApp</button>
@@ -194,7 +195,7 @@
   </div>
 </div>
 
-<div class="cart"<div class="cart" id="cart" aria-hidden="true"><div class="shade" data-close-cart></div><div class="cart-box"><button class="x" data-close-cart>×</button><div class="kicker">TU PEDIDO <i></i></div><h3>Una noche especial<br>empieza aquí.</h3><div id="cartItems"></div><div class="total"><span>Total</span><strong id="cartTotal">$0</strong></div><button class="gold-btn full" id="sendOrder">◌ Enviar pedido por WhatsApp</button></div></div>
+<div class="cart" id="cart" aria-hidden="true"><div class="shade" data-close-cart></div><div class="cart-box"><button class="x" data-close-cart>×</button><div class="kicker">TU PEDIDO <i></i></div><h3>Una noche especial<br>empieza aquí.</h3><div id="cartItems"></div><div class="cart-summary"><div><span>Artículos</span><strong id="cartItemsCount">0</strong></div><div><span>Total</span><strong id="cartTotal">$0</strong></div></div><button class="gold-btn full" id="sendOrder">◌ Enviar pedido por WhatsApp</button></div></div>
 <button class="cart-float" id="cartButton">🛍<b id="cartCount">0</b></button>
 </body>
 </html>
