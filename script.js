@@ -1,4 +1,4 @@
-const WHATSAPP="573000000000";
+const WHATSAPP="573217691827";
 const products=[
 {id:1,n:"Vela Burbuja",p:12000,q:"1 unidad",t:"Para regalar",c:"regalo",d:"Un diseño moderno y delicado, perfecto para regalar o consentir."},
 {id:2,n:"Vela en Frasco",p:15000,q:"1 unidad",t:"Para el hogar",c:"hogar",d:"Elegancia y calidez en un solo detalle."},
