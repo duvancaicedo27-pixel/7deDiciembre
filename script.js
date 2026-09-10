@@ -335,3 +335,43 @@ render();renderCart();
   document.getElementById("downloadCatalogPdf")?.addEventListener("click",downloadCatalogPDF);
   window.downloadLuzCatalogPDF=downloadCatalogPDF;
 })();
+
+/* ===== ACCESO ADMIN EN CELULAR: 5 TOQUES RÁPIDOS ===== */
+(function(){
+  const logo=document.getElementById("brandLogo");
+  const adminButton=document.getElementById("adminOpen");
+  if(!logo || !adminButton) return;
+
+  let taps=0;
+  let resetTimer=null;
+  let lastPointer=0;
+
+  function reset(){
+    taps=0;
+    if(resetTimer) clearTimeout(resetTimer);
+    resetTimer=null;
+  }
+
+  logo.addEventListener("pointerup",(event)=>{
+    const mobile=window.matchMedia("(max-width:900px)").matches;
+    if(!mobile) return;
+    if(event.pointerType==="mouse" && event.detail!==0) return;
+
+    event.preventDefault();
+    const now=Date.now();
+    if(now-lastPointer<80) return;
+    lastPointer=now;
+
+    taps+=1;
+    if(resetTimer) clearTimeout(resetTimer);
+    resetTimer=setTimeout(reset,1500);
+
+    if(taps===5){
+      reset();
+      const code=prompt("Acceso privado");
+      if(code==="0712"){
+        adminButton.click();
+      }
+    }
+  },{passive:false});
+})();
