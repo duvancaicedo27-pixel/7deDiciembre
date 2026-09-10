@@ -20,6 +20,7 @@ function renderCart(){
  const count=cart.reduce((a,x)=>a+x.qty,0);
  const total=cart.reduce((a,x)=>{const p=products.find(y=>y.id===x.id);return a+(p?p.p*x.qty:0)},0);
  document.getElementById("cartCount").textContent=count;
+ document.getElementById("cartButton").classList.toggle("has-items", count>0);
  if(document.getElementById("cartItemsCount")) document.getElementById("cartItemsCount").textContent=count;
  document.getElementById("cartTotal").textContent=money(total);
  if(!cart.length){box.innerHTML='<div class="cart-empty"><strong>Tu pedido está vacío.</strong><small>Agrega tus velitas favoritas y aquí verás el detalle, cantidades y total.</small></div>';return}
@@ -61,12 +62,13 @@ document.getElementById("sendOrder").onclick=()=>{
  }).filter(Boolean);
  const count=cart.reduce((a,x)=>a+x.qty,0);
  const now=new Date();
- const ref=`LD-${String(now.getHours()).padStart(2,"0")}${String(now.getMinutes()).padStart(2,"0")}${String(now.getSeconds()).padStart(2,"0")}`;
+ const nombres=[...new Set(cart.map(x=>products.find(y=>y.id===x.id)?.n).filter(Boolean))];
+ const referencia=nombres.join(" + ");
  const fecha=now.toLocaleDateString("es-CO",{day:"2-digit",month:"2-digit",year:"numeric"});
  const pedido=`*LUZ DE DICIEMBRE*
 ━━━━━━━━━━━━━━━━━━
 🕯️ *SOLICITUD DE PEDIDO*
-📋 Referencia: *${ref}*
+📋 Referencia: *${referencia}*
 📅 Fecha: ${fecha}
 
 Hola, quiero solicitar el siguiente pedido:

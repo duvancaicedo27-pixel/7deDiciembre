@@ -1242,3 +1242,73 @@ linear-gradient(160deg,#0d2528,#061116);position:relative;overflow:hidden;text-a
   .header nav,.header .menu{display:none!important}
 }
 .story-values{display:none!important}
+
+/* ===== AJUSTES SOLICITADOS: REFERENCIA, CARRITO, PORTADA Y CATÁLOGO ===== */
+/* La burbuja del carrito solo aparece cuando hay artículos. */
+.cart-float b{display:none!important}
+.cart-float.has-items b{display:grid!important}
+
+/* Catálogo compacto, elegante y escalable a medida que se agregan productos. */
+.products{
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:12px!important;
+}
+.product{
+  padding:8px!important;
+  border-radius:17px!important;
+}
+.product-image{
+  height:185px!important;
+  border-radius:13px!important;
+}
+.product-info{padding:10px 3px 4px!important}
+.product-head{gap:5px!important}
+.product h3{font-size:21px!important;line-height:.92!important;margin:0!important}
+.tag{font-size:6.5px!important;padding:4px 6px!important}
+.desc{font-size:9px!important;line-height:1.4!important;margin:6px 0!important}
+.price{font-size:15px!important}
+.actions{margin-top:8px!important}
+.add{padding:8px 7px!important;font-size:9px!important}
+.product-photo{border-radius:13px!important}
+
+/* Portada móvil: título más grande, legible y mejor proporcionado. */
+@media(max-width:900px){
+  .mobile-hero-copy h1{
+    font-size:58px!important;
+    line-height:.82!important;
+    letter-spacing:-.8px!important;
+    margin:13px 0 17px!important;
+  }
+  .mobile-hero-copy h1 em{
+    font-size:76px!important;
+    line-height:.70!important;
+  }
+  .mobile-hero-copy{
+    padding:29px 19px 34px!important;
+  }
+}
+@media(max-width:620px){
+  .products{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:9px!important;
+  }
+  .product-image{height:155px!important}
+  .product-info{padding:9px 2px 3px!important}
+  .product h3{font-size:18px!important}
+  .tag{font-size:6px!important;padding:3px 5px!important}
+  .desc{font-size:8px!important;line-height:1.35!important}
+  .price{font-size:14px!important}
+  .add{padding:8px 5px!important;font-size:8.5px!important}
+  .mobile-hero-copy h1{
+    font-size:55px!important;
+    line-height:.82!important;
+  }
+  .mobile-hero-copy h1 em{
+    font-size:73px!important;
+    line-height:.69!important;
+  }
+}
+@media(min-width:621px) and (max-width:1100px){
+  .products{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+  .product-image{height:175px!important}
+}
