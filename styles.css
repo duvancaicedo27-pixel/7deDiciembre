@@ -1428,3 +1428,159 @@ linear-gradient(160deg,#0d2528,#061116);position:relative;overflow:hidden;text-a
     line-height:1.5!important;
   }
 }
+
+/* ============================================================
+   CORRECCIÓN MÓVIL FINAL — HERO + COMPARTIR
+   Ajustado para que se vea grande, llamativo y legible sin
+   desbordarse en pantallas pequeñas.
+   ============================================================ */
+@media (max-width:900px){
+  .hero{
+    width:100%!important;
+    margin:0!important;
+    overflow:hidden!important;
+    border-radius:0 0 24px 24px!important;
+  }
+  .hero-image{
+    width:100%!important;
+    height:clamp(270px,58vw,420px)!important;
+    min-height:0!important;
+    aspect-ratio:auto!important;
+    background-size:cover!important;
+    background-position:center center!important;
+  }
+  .mobile-hero-copy{
+    padding:24px clamp(18px,5vw,30px) 30px!important;
+    text-align:left!important;
+  }
+  .mobile-hero-copy h1{
+    font-size:clamp(46px,8.3vw,64px)!important;
+    line-height:.83!important;
+    letter-spacing:-.7px!important;
+    margin:10px 0 16px!important;
+    max-width:620px!important;
+  }
+  .mobile-hero-copy h1 em{
+    font-size:clamp(59px,10vw,82px)!important;
+    line-height:.70!important;
+  }
+  .mobile-hero-copy p{
+    max-width:520px!important;
+    font-size:clamp(13px,2.1vw,15px)!important;
+    line-height:1.5!important;
+  }
+  .mobile-actions{
+    max-width:360px!important;
+    margin-top:16px!important;
+  }
+
+  /* La sección de compartir deja de ocupar una altura excesiva. */
+  .share{
+    grid-template-columns:1fr!important;
+    min-height:0!important;
+    margin-bottom:34px!important;
+    border-radius:22px!important;
+    overflow:hidden!important;
+  }
+  .share-copy{
+    padding:25px 19px 22px!important;
+  }
+  .share h2{
+    font-size:clamp(43px,8vw,56px)!important;
+    line-height:.9!important;
+    margin:10px 0 13px!important;
+  }
+  .share p{
+    font-size:12px!important;
+    line-height:1.5!important;
+    margin:0!important;
+  }
+  .share-phone{
+    margin:16px 0 10px!important;
+  }
+  .phone-row{
+    min-height:52px!important;
+    border-radius:15px!important;
+  }
+  .phone-row input{
+    font-size:14px!important;
+    padding:13px 12px!important;
+  }
+  .share-copy>.gold-btn,
+  .share-copy>.outline-btn{
+    width:100%!important;
+    min-height:50px!important;
+  }
+  .share-copy>small{
+    font-size:8px!important;
+    line-height:1.45!important;
+    margin-top:9px!important;
+  }
+  .share-art{
+    min-height:175px!important;
+    height:175px!important;
+    border-top:1px solid rgba(239,196,104,.10)!important;
+    background:radial-gradient(circle at 50% 35%,rgba(239,174,50,.12),transparent 35%)!important;
+  }
+  .gift{
+    width:112px!important;
+    height:126px!important;
+    right:auto!important;
+    left:50%!important;
+    bottom:16px!important;
+    transform:translateX(-50%) rotate(-2deg)!important;
+    font-size:20px!important;
+    line-height:1!important;
+  }
+  .share-script{
+    left:0!important;
+    right:0!important;
+    top:17px!important;
+    text-align:center!important;
+    font-size:22px!important;
+    line-height:.95!important;
+    transform:rotate(-3deg)!important;
+  }
+}
+
+@media (max-width:420px){
+  .hero-image{
+    height:clamp(255px,72vw,310px)!important;
+    background-position:center center!important;
+  }
+  .mobile-hero-copy{
+    padding:21px 16px 27px!important;
+  }
+  .mobile-hero-copy h1{
+    font-size:44px!important;
+    line-height:.84!important;
+    margin:9px 0 14px!important;
+  }
+  .mobile-hero-copy h1 em{
+    font-size:57px!important;
+    line-height:.72!important;
+  }
+  .mobile-hero-copy p{
+    font-size:12.5px!important;
+  }
+  .share-copy{
+    padding:23px 16px 20px!important;
+  }
+  .share h2{
+    font-size:43px!important;
+  }
+  .share-art{
+    min-height:165px!important;
+    height:165px!important;
+  }
+  .gift{
+    width:104px!important;
+    height:118px!important;
+    bottom:13px!important;
+    font-size:19px!important;
+  }
+  .share-script{
+    font-size:20px!important;
+    top:15px!important;
+  }
+}
