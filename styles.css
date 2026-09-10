@@ -1584,3 +1584,126 @@ linear-gradient(160deg,#0d2528,#061116);position:relative;overflow:hidden;text-a
     top:15px!important;
   }
 }
+
+/* ============================================================
+   AJUSTE FINAL MÓVIL — HERO MÁS GRANDE + MENSAJE EN RECUADRO
+   ============================================================ */
+@media (max-width: 900px){
+  .hero{
+    min-height:0!important;
+    height:auto!important;
+    overflow:hidden!important;
+  }
+  .hero-image{
+    height:clamp(360px,58svh,500px)!important;
+    min-height:360px!important;
+    width:100%!important;
+    background-size:cover!important;
+    background-position:center center!important;
+  }
+  .mobile-hero-copy{
+    min-height:0!important;
+    padding:28px clamp(20px,6vw,34px) 34px!important;
+    background:linear-gradient(180deg,#061116 0%,#061116 100%)!important;
+    text-align:left!important;
+  }
+  .mobile-hero-copy .kicker{
+    font-size:11px!important;
+    letter-spacing:3.2px!important;
+    margin-bottom:6px!important;
+  }
+  .mobile-hero-copy h1{
+    font-size:clamp(56px,12vw,76px)!important;
+    line-height:.80!important;
+    letter-spacing:-1px!important;
+    margin:10px 0 18px!important;
+    max-width:100%!important;
+  }
+  .mobile-hero-copy h1 em{
+    font-size:clamp(72px,15vw,96px)!important;
+    line-height:.68!important;
+  }
+  .mobile-hero-copy p{
+    max-width:100%!important;
+    font-size:clamp(14px,3.6vw,17px)!important;
+    line-height:1.48!important;
+    margin:0!important;
+  }
+  .mobile-actions{
+    max-width:100%!important;
+    margin-top:20px!important;
+  }
+  .mobile-actions .gold-btn{
+    width:100%!important;
+    min-height:54px!important;
+    font-size:13px!important;
+  }
+
+  .share-art{
+    min-height:190px!important;
+    height:190px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    padding:16px!important;
+  }
+  .share-message{
+    position:relative!important;
+    inset:auto!important;
+    width:min(86%,300px)!important;
+    height:auto!important;
+    min-height:145px!important;
+    padding:18px 18px 16px!important;
+    border-radius:10px 10px 16px 16px!important;
+    transform:rotate(-2deg)!important;
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:1px!important;
+  }
+  .share-message strong{
+    color:#efc771!important;
+    font:400 clamp(25px,7.5vw,32px)/1 "Parisienne",cursive!important;
+  }
+  .share-message em{
+    color:#efc771!important;
+    font:400 clamp(26px,8vw,34px)/.95 "Parisienne",cursive!important;
+  }
+  .share-message span{
+    color:#e7b968!important;
+    font:400 clamp(18px,5.5vw,24px)/1.05 "Parisienne",cursive!important;
+    text-align:center!important;
+    margin-top:8px!important;
+  }
+  .share-script{display:none!important}
+}
+
+@media (max-width:420px){
+  .hero-image{
+    height:clamp(340px,56svh,430px)!important;
+    min-height:340px!important;
+  }
+  .mobile-hero-copy{
+    padding:25px 17px 30px!important;
+  }
+  .mobile-hero-copy h1{
+    font-size:clamp(52px,13vw,66px)!important;
+    line-height:.81!important;
+  }
+  .mobile-hero-copy h1 em{
+    font-size:clamp(67px,16vw,84px)!important;
+  }
+  .mobile-hero-copy p{
+    font-size:13.5px!important;
+  }
+  .share-art{
+    min-height:175px!important;
+    height:175px!important;
+  }
+  .share-message{
+    width:88%!important;
+    min-height:138px!important;
+    padding:16px 13px!important;
+  }
+}
