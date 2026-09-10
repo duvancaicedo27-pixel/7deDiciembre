@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#061116">
+<title>Luz de Diciembre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=DM+Sans:wght@400;500;600&family=Parisienne&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<script defer src="script.js"></script>
+</head>
+<body>
+<header class="header">
+  <a class="brand" href="#inicio"><span class="brand-mark">◒</span><span><strong>LUZ DE DICIEMBRE</strong><small>PEQUEÑOS DETALLES · GRANDES MOMENTOS</small></span></a>
+  <nav><a href="#inicio">Inicio</a><a href="#historia">Nuestra historia</a><a href="#catalogo">Velitas</a><a href="#compartir">Comparte</a><button id="waHeader">◌ Comprar por WhatsApp</button><button class="admin-trigger" id="adminOpen">⚙ Administrar</button></nav>
+  <button class="menu" id="menu">☰</button>
+</header>
+
+<main>
+<section class="hero" id="inicio">
+  <div class="hero-image"></div>
+  <div class="real-flame-pro" aria-hidden="true">
+      <span class="flame-outer"></span>
+      <span class="flame-mid"></span>
+      <span class="flame-core"></span>
+      <span class="flame-blue"></span>
+      <span class="flame-glow"></span>
+    </div>
+  <button class="hotspot wish-zone" id="wishHotspot" aria-label="Escribir un deseo"></button>
+  <button class="hotspot wa-zone" id="heroWa" aria-label="Comprar por WhatsApp"></button>
+  <a class="hotspot catalog-zone" href="#catalogo" aria-label="Ver velitas"></a>
+  <div class="mobile-hero-copy">
+    <div class="kicker">HAZLO PERSONAL <i></i></div>
+    <h1>Enciende un<br><em>deseo</em> ♡</h1>
+    <p>Una noche para celebrar, agradecer y compartir luz.</p>
+    <div class="mobile-actions"><a class="gold-btn" href="#catalogo">Ver velitas →</a><button class="outline-btn" id="mobileWa">◌ WhatsApp</button></div>
+  </div>
+</section>
+
+<section class="story section" id="historia">
+  <div class="story-art">
+    <div class="story-art-glow"></div>
+    <div class="story-candle">
+      <span class="story-drip story-drip-1"></span>
+      <span class="story-drip story-drip-2"></span>
+      <span class="story-drip story-drip-3"></span>
+      <span class="story-sheen"></span>
+    </div>
+    <div class="story-wick"></div>
+    <div class="story-flame">
+      <span class="story-flame-core"></span>
+      <span class="story-flame-blue"></span>
+    </div>
+    <span class="story-label">DETALLES QUE SE SIENTEN</span>
+  </div>
+
+  <div class="story-copy">
+    <div class="kicker">MÁS QUE VELAS <i></i></div>
+    <h2>Pequeños detalles<br>que iluminan grandes<br><em>momentos.</em></h2>
+    <p>
+      Cada 7 de diciembre encendemos una luz por alguien, por un deseo,
+      por un agradecimiento o por compartir un momento especial.
+    </p>
+    <p>
+      En <strong>Luz de Diciembre</strong>, cada velita está pensada para convertir esa noche
+      en un recuerdo.
+    </p>
+    <a class="outline-mini" href="#catalogo">Conoce nuestra colección →</a>
+  </div>
+</section>
+
+<section class="catalog section" id="catalogo">
+  <div class="section-title"><div><div class="kicker">NUESTRAS VELITAS <i></i></div><h2>Detalles que <em>iluminan.</em></h2></div><div class="catalog-tools"><button class="pdf-download" id="downloadCatalogPdf">↓ Descargar catálogo PDF</button><button class="text-link" id="waCatalog">Comprar por WhatsApp →</button></div></div>
+  <div class="filters"><button class="filter active" data-filter="todos">Todas</button><button class="filter" data-filter="regalo">Para regalar</button><button class="filter" data-filter="hogar">Para el hogar</button><button class="filter" data-filter="compartir">Para compartir</button></div>
+  <div id="products" class="products"></div>
+</section>
+
+<section class="share section" id="compartir">
+  <div class="share-copy"><div class="kicker">COMPARTE LA LUZ <i></i></div><h2>¿Te gustó una<br><em>velita?</em></h2><p>También puedes apoyar este emprendimiento compartiéndola en tus Estados de WhatsApp.</p><button class="gold-btn" id="shareBtn">Compartir en mi estado ↗</button><small>La web prepara la publicación y tú decides cuándo compartirla.</small></div>
+  <div class="share-art"><div class="gift">Gracias<br>por ser parte<br>de esta luz ♡</div><div class="share-script">Pequeñas velas<br><em>grandes historias</em></div></div>
+</section>
+</main>
+
+
+<div class="admin-modal" id="adminModal" aria-hidden="true">
+  <div class="admin-shade" data-close-admin></div>
+  <section class="admin-panel" role="dialog" aria-modal="true" aria-labelledby="adminTitle">
+    <button class="admin-close" data-close-admin>×</button>
+    <div class="kicker">PANEL PRIVADO <i></i></div>
+    <h2 id="adminTitle">Administrar <em>velitas.</em></h2>
+    <p class="admin-intro">Agrega las velitas que realmente tienes disponibles. Los cambios se guardan en este navegador.</p>
+
+    <div class="admin-tabs">
+      <button class="admin-tab active" data-admin-tab="products">Productos</button>
+      <button class="admin-tab" data-admin-tab="new">Agregar producto</button>
+    </div>
+
+    <div class="admin-view active" id="adminProductsView">
+      <div class="admin-stats">
+        <div><strong id="adminTotal">0</strong><small>Productos</small></div>
+        <div><strong id="adminAvailable">0</strong><small>Disponibles</small></div>
+        <div><strong id="adminSoldOut">0</strong><small>Agotados</small></div>
+      </div>
+      <div id="adminProductList" class="admin-product-list"></div>
+    </div>
+
+    <div class="admin-view" id="adminNewView">
+      <form id="adminForm" class="admin-form">
+        <input type="hidden" id="editId">
+        <div class="photo-uploader">
+          <div class="photo-preview" id="photoPreview"><span>📷</span><small>Foto del producto</small></div>
+          <div class="photo-actions">
+            <label class="upload-label" for="productImage">Elegir foto</label>
+            <input id="productImage" type="file" accept="image/*">
+            <small>JPG, PNG o WEBP. La foto se ajustará automáticamente al catálogo.</small>
+          </div>
+        </div>
+        <div class="admin-grid">
+          <label>Nombre<input id="productName" required maxlength="60" placeholder="Ej. Vela Árbol Navideño"></label>
+          <label>Precio<input id="productPrice" type="number" min="0" step="100" required placeholder="14000"></label>
+          <label>Presentación<input id="productQty" maxlength="40" required placeholder="1 unidad"></label>
+          <label>Categoría
+            <select id="productCat">
+              <option value="regalo">Para regalar</option>
+              <option value="hogar">Para el hogar</option>
+              <option value="compartir">Para compartir</option>
+            </select>
+          </label>
+          <label class="wide">Descripción<textarea id="productDesc" maxlength="180" required placeholder="Describe brevemente la velita..."></textarea></label>
+          <label class="toggle-label wide"><input id="productAvailable" type="checkbox" checked><span></span> Disponible para comprar</label>
+        </div>
+        <div class="admin-form-actions">
+          <button type="button" class="admin-secondary" id="adminCancelEdit">Cancelar</button>
+          <button type="submit" class="gold-btn">Guardar producto</button>
+        </div>
+      </form>
+    </div>
+  </section>
+</div>
+
+<footer class="footer">LUZ DE DICIEMBRE <span>7 DE DICIEMBRE · TRADICIÓN QUE ILUMINA</span></footer>
+
+<div class="modal" id="wishModal" aria-hidden="true"><div class="shade" data-close-wish></div><div class="modal-card"><button class="x" data-close-wish>×</button><div class="kicker">HAZLO PERSONAL <i></i></div><h3>Enciende un <em>deseo.</em></h3><p>Escribe algo que quieras celebrar, agradecer o pedir este 7 de diciembre.</p><div class="wish-row"><input id="wishInput" maxlength="100" placeholder="Escribe tu deseo aquí…"><button class="gold-btn" id="wishSend">✦ Encender</button></div><small>Tu deseo se queda en este dispositivo.</small></div></div>
+
+<div class="modal" id="shareModal" aria-hidden="true"><div class="shade" data-close-share></div><div class="modal-card"><button class="x" data-close-share>×</button><div class="kicker">LISTO PARA COMPARTIR <i></i></div><h3>Tu publicación para Estados</h3><div class="status"><b>7 DE DICIEMBRE</b><em>Luz para compartir.</em><span>Una velita para esta noche</span><div class="status-candle"></div><div class="status-flame"></div></div><p>En tu teléfono podrás continuar a WhatsApp y elegir “Mi estado”.</p><button class="gold-btn full" id="shareWhatsApp">Continuar en WhatsApp</button></div></div>
+
+<div class="cart" id="cart" aria-hidden="true"><div class="shade" data-close-cart></div><div class="cart-box"><button class="x" data-close-cart>×</button><div class="kicker">TU PEDIDO <i></i></div><h3>Una noche especial<br>empieza aquí.</h3><div id="cartItems"></div><div class="total"><span>Total</span><strong id="cartTotal">$0</strong></div><button class="gold-btn full" id="sendOrder">◌ Enviar pedido por WhatsApp</button></div></div>
+<button class="cart-float" id="cartButton">🛍<b id="cartCount">0</b></button>
+</body>
+</html>
