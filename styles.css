@@ -776,3 +776,13 @@ h2,h3{font-family:"Cormorant Garamond",serif;font-weight:600;margin:0}.story h2,
 @media(max-width:620px){
   .mobile-device .hero-image{height:235px!important;background-size:auto 235px!important}
 }
+
+/* ===== PORTADA CELULAR: SOLO ENCUADRE ===== */
+@media (max-width:620px){
+  .hero-image{
+    height:250px !important;
+    background-size:auto 250px !important;
+    background-position:64% center !important;
+    background-repeat:no-repeat !important;
+  }
+}
