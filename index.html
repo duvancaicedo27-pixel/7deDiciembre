@@ -14,7 +14,7 @@
 <body>
 <header class="header">
   <a class="brand" href="#inicio" id="brandLogo"><span class="brand-mark">◒</span><span><strong>LUZ DE DICIEMBRE</strong><small>PEQUEÑOS DETALLES · GRANDES MOMENTOS</small></span></a>
-  <nav><a href="#inicio">Inicio</a><a href="#historia">Nuestra historia</a><a href="#catalogo">Velitas</a><a href="#compartir">Comparte</a><button id="waHeader">◌ Comprar por WhatsApp</button><button class="admin-trigger" id="adminOpen">⚙ Administrar</button></nav>
+  <nav><a href="#inicio">Inicio</a><a href="#historia">Nuestra historia</a><a href="#catalogo">Velitas</a><a href="#compartir">Comparte</a><button class="admin-trigger" id="adminOpen">⚙ Administrar</button></nav>
   <button class="menu" id="menu">☰</button>
 </header>
 
@@ -29,13 +29,12 @@
       <span class="flame-glow"></span>
     </div>
   <button class="hotspot wish-zone" id="wishHotspot" aria-label="Escribir un deseo"></button>
-  <button class="hotspot wa-zone" id="heroWa" aria-label="Comprar por WhatsApp"></button>
   <a class="hotspot catalog-zone" href="#catalogo" aria-label="Ver velitas"></a>
   <div class="mobile-hero-copy">
     <div class="kicker">HAZLO PERSONAL <i></i></div>
     <h1>Enciende un<br><em>deseo</em> ♡</h1>
     <p>Una noche para celebrar, agradecer y compartir luz.</p>
-    <div class="mobile-actions"><a class="gold-btn" href="#catalogo">Ver velitas →</a><button class="outline-btn" id="mobileWa">◌ WhatsApp</button></div>
+    <div class="mobile-actions"><a class="gold-btn" href="#catalogo">Ver velitas →</a></div>
   </div>
 </section>
 
@@ -44,7 +43,6 @@
     <div class="story-art-glow"></div>
     <div class="story-candle"></div>
     <div class="story-flame"></div>
-    <span>DETALLES QUE SE SIENTEN</span>
   </div>
 
   <div class="story-copy">
@@ -56,32 +54,12 @@
       por un deseo, por un agradecimiento o simplemente por compartir
       un momento especial.
     </p>
-    <p>
-      En <strong>Luz de Diciembre</strong> queremos que cada velita sea más que una
-      decoración: ese pequeño detalle que convierte una noche especial en un recuerdo.
-    </p>
-
     <a class="outline-mini" href="#catalogo">Conoce nuestra colección →</a>
-
-    <div class="story-values">
-      <div class="story-value">
-        <b>✦</b>
-        <span><strong>Detalles para regalar</strong><small>Pequeños gestos que dicen mucho.</small></span>
-      </div>
-      <div class="story-value">
-        <b>♡</b>
-        <span><strong>Momentos para compartir</strong><small>Una luz que se disfruta juntos.</small></span>
-      </div>
-      <div class="story-value">
-        <b>✧</b>
-        <span><strong>Hecho para diciembre</strong><small>Una colección pensada para el 7 de diciembre.</small></span>
-      </div>
-    </div>
   </div>
 </section>
 
 <section class="catalog section" id="catalogo">
-  <div class="section-title"><div><div class="kicker">NUESTRAS VELITAS <i></i></div><h2>Detalles que <em>iluminan.</em></h2></div><div class="catalog-tools"><button class="pdf-download" id="downloadCatalogPdf">↓ Descargar catálogo PDF</button><button class="text-link" id="waCatalog">Comprar por WhatsApp →</button></div></div>
+  <div class="section-title"><div><div class="kicker">NUESTRAS VELITAS <i></i></div><h2>Detalles que <em>iluminan.</em></h2></div><div class="catalog-tools"><button class="pdf-download" id="downloadCatalogPdf">↓ Descargar catálogo PDF</button></div></div>
   <div class="filters"><button class="filter active" data-filter="todos">Todas</button><button class="filter" data-filter="regalo">Para regalar</button><button class="filter" data-filter="hogar">Para el hogar</button><button class="filter" data-filter="compartir">Para compartir</button></div>
   <div id="products" class="products"></div>
 </section>
@@ -195,7 +173,7 @@
   </div>
 </div>
 
-<div class="cart" id="cart" aria-hidden="true"><div class="shade" data-close-cart></div><div class="cart-box"><button class="x" data-close-cart>×</button><div class="kicker">TU PEDIDO <i></i></div><h3>Una noche especial<br>empieza aquí.</h3><div id="cartItems"></div><div class="cart-summary"><div><span>Artículos</span><strong id="cartItemsCount">0</strong></div><div><span>Total</span><strong id="cartTotal">$0</strong></div></div><button class="gold-btn full" id="sendOrder">◌ Enviar pedido por WhatsApp</button></div></div>
+<div class="cart" id="cart" aria-hidden="true"><div class="shade" data-close-cart></div><div class="cart-box"><button class="x" data-close-cart>×</button><div class="kicker">TU PEDIDO <i></i></div><h3>Una noche especial<br>empieza aquí.</h3><div id="cartItems"></div><div class="cart-summary"><div><span>Artículos</span><strong id="cartItemsCount">0</strong></div><div><span>Total</span><strong id="cartTotal">$0</strong></div></div><button class="gold-btn full" id="sendOrder">◌ Enviar solicitud de pedido por WhatsApp</button></div></div>
 <button class="cart-float" id="cartButton">🛍<b id="cartCount">0</b></button>
 </body>
 </html>

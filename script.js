@@ -13,7 +13,7 @@ const toggle=(id,on)=>{const e=document.getElementById(id);e.classList.toggle("o
 
 function render(filter="todos"){
  const list=filter==="todos"?products:products.filter(p=>p.c===filter);
- document.getElementById("products").innerHTML=list.map(p=>`<article class="product"><div class="product-image"><div class="p-flame"></div><div class="p-candle"></div></div><div class="product-info"><div class="product-head"><h3>${p.n}</h3><span class="tag">${p.t}</span></div><p class="desc">${p.q} · ${p.d}</p><div class="price">${money(p.p)}</div><div class="actions"><button class="add" data-add="${p.id}">+ Agregar</button><button class="buy" data-buy="${p.id}">WhatsApp</button></div></div></article>`).join("");
+ document.getElementById("products").innerHTML=list.map(p=>`<article class="product"><div class="product-image">${p.image?`<img class="product-photo" src="${p.image}" alt="${p.n}" loading="lazy">`:`<div class="p-flame"></div><div class="p-candle"></div>`}</div><div class="product-info"><div class="product-head"><h3>${p.n}</h3><span class="tag">${p.t}</span></div><p class="desc">${p.q} · ${p.d}</p><div class="price">${money(p.p)}</div><div class="actions"><button class="add" data-add="${p.id}">+ Agregar al carrito</button></div></div></article>`).join("");
 }
 function renderCart(){
  const box=document.getElementById("cartItems");
@@ -22,16 +22,15 @@ function renderCart(){
  document.getElementById("cartCount").textContent=count;
  if(document.getElementById("cartItemsCount")) document.getElementById("cartItemsCount").textContent=count;
  document.getElementById("cartTotal").textContent=money(total);
- if(!cart.length){box.innerHTML='<p style="color:#7d8482">Tu pedido está vacío.</p>';return}
+ if(!cart.length){box.innerHTML='<div class="cart-empty"><strong>Tu pedido está vacío.</strong><small>Agrega tus velitas favoritas y aquí verás el detalle, cantidades y total.</small></div>';return}
  box.innerHTML=cart.map(x=>{const p=products.find(y=>y.id===x.id);if(!p)return '';const subtotal=p.p*x.qty;return `<div class="cart-line"><div><strong>${p.n}</strong><small>${p.q} · ${money(p.p)} c/u · Subtotal ${money(subtotal)}</small></div><div class="qty"><button data-dec="${p.id}" aria-label="Disminuir cantidad">−</button><span>${x.qty}</span><button data-inc="${p.id}" aria-label="Aumentar cantidad">+</button><button class="remove-item" data-remove="${p.id}" aria-label="Eliminar ${p.n}">×</button></div></div>`}).join("");
 }
 
 function save(){localStorage.setItem("ld_cart",JSON.stringify(cart));renderCart()}
 function add(id){const f=cart.find(x=>x.id===id);f?f.qty++:cart.push({id,qty:1});save()}
 document.addEventListener("click",e=>{
- const a=e.target.closest("[data-add]"),b=e.target.closest("[data-buy]"),i=e.target.closest("[data-inc]"),d=e.target.closest("[data-dec]");
+ const a=e.target.closest("[data-add]"),i=e.target.closest("[data-inc]"),d=e.target.closest("[data-dec]");
  if(a)add(+a.dataset.add);
- if(b){const p=products.find(x=>x.id===+b.dataset.buy);openWA(`Hola 👋 Quiero comprar ${p.n} (${p.q}) por ${money(p.p)}. ¿Me confirmas disponibilidad?`)}
  if(i){const x=cart.find(v=>v.id===+i.dataset.inc);if(x)x.qty++;save()}
  if(d){const x=cart.find(v=>v.id===+d.dataset.dec);if(x){x.qty--;if(x.qty<=0)cart=cart.filter(v=>v.id!==x.id)}save()}
  if(e.target.closest("[data-close-wish]"))toggle("wishModal",false);
@@ -39,23 +38,53 @@ document.addEventListener("click",e=>{
  if(e.target.closest("[data-close-cart]"))toggle("cart",false);
 });
 document.querySelectorAll(".filter").forEach(x=>x.addEventListener("click",()=>{document.querySelectorAll(".filter").forEach(y=>y.classList.remove("active"));x.classList.add("active");render(x.dataset.filter)}));
-["waHeader","waCatalog","heroWa","mobileWa"].forEach(id=>document.getElementById(id)?.addEventListener("click",()=>openWA("Hola 👋 Quiero información sobre las velitas del 7 de diciembre.")));
 document.getElementById("wishHotspot").onclick=()=>toggle("wishModal",true);
 document.getElementById("wishSend").onclick=()=>{const v=document.getElementById("wishInput").value.trim();if(v){alert("✨ "+v+"\n\nTu deseo queda encendido por esta noche.");toggle("wishModal",false)}};
 document.getElementById("shareWhatsApp").onclick=()=>openWA("Hola 👋 Te comparto una velita de Luz de Diciembre para este 7 de diciembre 🕯️✨.");
 document.getElementById("cartButton").onclick=()=>toggle("cart",true);
 document.getElementById("sendOrder").onclick=()=>{
- if(!cart.length)return openWA("Hola 👋 Mi carrito está vacío. Quiero conocer las velitas disponibles para el 7 de diciembre 🕯️✨.");
+ if(!cart.length){
+   alert("Tu carrito está vacío. Agrega al menos una velita antes de enviar la solicitud.");
+   return;
+ }
  let total=0;
  const lines=cart.map(x=>{
    const p=products.find(y=>y.id===x.id);
    if(!p)return "";
    const subtotal=p.p*x.qty;
    total+=subtotal;
-   return `• ${p.n}\n  Cantidad: ${x.qty}\n  Presentación: ${p.q}\n  Valor unitario: ${money(p.p)}\n  Subtotal: ${money(subtotal)}`;
+   return `*${p.n}*
+  • Cantidad: ${x.qty}
+  • Presentación: ${p.q}
+  • Valor unitario: ${money(p.p)}
+  • Subtotal: *${money(subtotal)}*`;
  }).filter(Boolean);
  const count=cart.reduce((a,x)=>a+x.qty,0);
- openWA(`Hola 👋 Quiero hacer este pedido por WhatsApp:\n\n${lines.join("\n\n")}\n\n📦 Total de artículos: ${count}\n💰 Total del pedido: ${money(total)}\n\n¿Me confirmas disponibilidad y entrega?`);
+ const now=new Date();
+ const ref=`LD-${String(now.getHours()).padStart(2,"0")}${String(now.getMinutes()).padStart(2,"0")}${String(now.getSeconds()).padStart(2,"0")}`;
+ const fecha=now.toLocaleDateString("es-CO",{day:"2-digit",month:"2-digit",year:"numeric"});
+ const pedido=`*LUZ DE DICIEMBRE*
+━━━━━━━━━━━━━━━━━━
+🕯️ *SOLICITUD DE PEDIDO*
+📋 Referencia: *${ref}*
+📅 Fecha: ${fecha}
+
+Hola, quiero solicitar el siguiente pedido:
+
+${lines.join("\n\n")}
+
+━━━━━━━━━━━━━━━━━━
+📦 *Total de artículos:* ${count}
+💰 *TOTAL DEL PEDIDO: ${money(total)}*
+
+Agradezco confirmar:
+• Disponibilidad de los productos
+• Valor final del pedido
+• Forma de pago
+• Opciones de entrega
+
+Quedo atento a su confirmación. Muchas gracias. ✨`;
+ openWA(pedido);
 };
 document.getElementById("menu").onclick=()=>alert("En la versión móvil usa la barra y los botones de la página.");
 render();renderCart();
@@ -466,55 +495,82 @@ render();renderCart();
     return digits.length===10?digits:"";
   }
 
-  function buildCatalogCanvas(){
+  async function loadImage(data){
+    return new Promise((resolve,reject)=>{
+      const img=new Image();
+      img.onload=()=>resolve(img);
+      img.onerror=reject;
+      img.src=data;
+    });
+  }
+
+  async function buildCatalogCanvas(){
     const list=available();
+    const cardH=360;
+    const rows=Math.max(1,Math.ceil(Math.min(list.length,8)/2));
     const canvas=document.createElement("canvas");
-    canvas.width=1080;canvas.height=1920;
+    canvas.width=1080;
+    canvas.height=Math.max(1920,500+rows*(cardH+34)+160);
     const ctx=canvas.getContext("2d");
 
-    const bg=ctx.createLinearGradient(0,0,0,1920);
+    const bg=ctx.createLinearGradient(0,0,0,canvas.height);
     bg.addColorStop(0,"#061116");bg.addColorStop(.55,"#0b1d21");bg.addColorStop(1,"#1b110d");
-    ctx.fillStyle=bg;ctx.fillRect(0,0,1080,1920);
+    ctx.fillStyle=bg;ctx.fillRect(0,0,canvas.width,canvas.height);
 
-    const rg=ctx.createRadialGradient(540,640,40,540,640,520);
+    const rg=ctx.createRadialGradient(540,580,40,540,580,560);
     rg.addColorStop(0,"rgba(240,177,57,.24)");rg.addColorStop(1,"rgba(240,177,57,0)");
-    ctx.fillStyle=rg;ctx.fillRect(0,0,1080,1300);
-
-    for(let i=0;i<30;i++){
-      ctx.fillStyle=`rgba(239,196,104,${.04+Math.random()*.10})`;
-      ctx.beginPath();ctx.arc(Math.random()*1080,Math.random()*1900,1+Math.random()*4,0,Math.PI*2);ctx.fill();
-    }
+    ctx.fillStyle=rg;ctx.fillRect(0,0,canvas.width,1200);
 
     ctx.textAlign="center";
-    ctx.fillStyle="#dfb96d";ctx.font="600 26px DM Sans";ctx.fillText("LUZ DE DICIEMBRE",540,145);
-    ctx.font="500 18px DM Sans";ctx.fillStyle="#a68d63";ctx.fillText("7 DE DICIEMBRE · TRADICIÓN QUE ILUMINA",540,182);
-    ctx.font="400 78px Cormorant Garamond";ctx.fillStyle="#f1e9dc";ctx.fillText("Catálogo",540,300);
-    ctx.font="400 92px Parisienne";ctx.fillStyle="#f1cc78";ctx.fillText("disponible.",540,390);
+    ctx.fillStyle="#dfb96d";ctx.font="600 26px DM Sans";ctx.fillText("LUZ DE DICIEMBRE",540,118);
+    ctx.font="500 18px DM Sans";ctx.fillStyle="#a68d63";ctx.fillText("7 DE DICIEMBRE · TRADICIÓN QUE ILUMINA",540,154);
+    ctx.font="400 76px Cormorant Garamond";ctx.fillStyle="#f1e9dc";ctx.fillText("Inventario",540,265);
+    ctx.font="400 88px Parisienne";ctx.fillStyle="#f1cc78";ctx.fillText("disponible.",540,350);
+    ctx.font="400 21px DM Sans";ctx.fillStyle="#9aa19e";ctx.fillText("Velitas actualmente disponibles",540,397);
 
     if(!list.length){
       ctx.fillStyle="#c7beb0";ctx.font="400 28px DM Sans";ctx.fillText("En este momento no hay productos disponibles.",540,760);
     }
 
-    const cols=2, cardW=450, cardH=330, gap=34, startX=90, startY=470;
-    list.slice(0,8).forEach((p,i)=>{
+    const visible=list.slice(0,8);
+    const cols=2, cardW=450, gap=34, startX=90, startY=455;
+    for(let i=0;i<visible.length;i++){
+      const p=visible[i];
       const col=i%cols,row=Math.floor(i/cols);
       const x=startX+col*(cardW+gap),y=startY+row*(cardH+gap);
-      ctx.fillStyle="rgba(7,19,24,.82)";ctx.roundRect(x,y,cardW,cardH,24);ctx.fill();
-      ctx.strokeStyle="rgba(239,196,104,.20)";ctx.lineWidth=2;ctx.roundRect(x,y,cardW,cardH,24);ctx.stroke();
-      const cx=x+cardW/2,cy=y+125;
-      ctx.shadowColor="rgba(255,175,46,.34)";ctx.shadowBlur=28;
-      const cg=ctx.createLinearGradient(cx-45,cy-70,cx+45,cy+90);
-      cg.addColorStop(0,"#96713d");cg.addColorStop(.4,"#efd080");cg.addColorStop(.52,"#fff0ba");cg.addColorStop(1,"#ad7b3b");
-      ctx.fillStyle=cg;ctx.roundRect(cx-43,cy-40,86,125,13);ctx.fill();ctx.shadowBlur=0;
-      ctx.fillStyle="#ffab37";ctx.beginPath();ctx.ellipse(cx,cy-61,15,30,0,0,Math.PI*2);ctx.fill();
-      ctx.fillStyle="#fff5ca";ctx.beginPath();ctx.ellipse(cx,cy-62,7,16,0,0,Math.PI*2);ctx.fill();
-      ctx.fillStyle="#eee7da";ctx.font="600 30px Cormorant Garamond";ctx.fillText((p.n||"Velita").slice(0,25),cx,y+195);
-      ctx.fillStyle="#e6c77d";ctx.font="600 24px DM Sans";ctx.fillText(money(p.p||0),cx,y+230);
-      ctx.fillStyle="#838b88";ctx.font="400 17px DM Sans";ctx.fillText((p.q||"1 unidad"),cx,y+257);
-    });
+      ctx.fillStyle="rgba(7,19,24,.88)";ctx.beginPath();ctx.roundRect(x,y,cardW,cardH,24);ctx.fill();
+      ctx.strokeStyle="rgba(239,196,104,.20)";ctx.lineWidth=2;ctx.beginPath();ctx.roundRect(x,y,cardW,cardH,24);ctx.stroke();
 
-    ctx.fillStyle="#bca276";ctx.font="400 18px DM Sans";ctx.fillText("Catálogo actualizado · Productos disponibles",540,1875);
-    ctx.fillStyle="#6f7775";ctx.font="400 15px DM Sans";ctx.fillText("Compartir esta imagen ayuda a que nuestro emprendimiento llegue más lejos ♡",540,1905);
+      const hasImage=!!(p.image&&/^data:image\//.test(p.image));
+      if(hasImage){
+        try{
+          const img=await loadImage(p.image);
+          const boxX=x+28,boxY=y+28,boxW=394,boxH=190;
+          ctx.save();ctx.beginPath();ctx.roundRect(boxX,boxY,boxW,boxH,18);ctx.clip();
+          const scale=Math.max(boxW/img.width,boxH/img.height);
+          const dw=img.width*scale,dh=img.height*scale;
+          ctx.drawImage(img,boxX+(boxW-dw)/2,boxY+(boxH-dh)/2,dw,dh);ctx.restore();
+        }catch(err){
+          // fallback below
+        }
+      }else{
+        const cx=x+cardW/2,cy=y+128;
+        ctx.shadowColor="rgba(255,175,46,.34)";ctx.shadowBlur=28;
+        const cg=ctx.createLinearGradient(cx-45,cy-70,cx+45,cy+90);
+        cg.addColorStop(0,"#96713d");cg.addColorStop(.4,"#efd080");cg.addColorStop(.52,"#fff0ba");cg.addColorStop(1,"#ad7b3b");
+        ctx.fillStyle=cg;ctx.beginPath();ctx.roundRect(cx-43,cy-40,86,125,13);ctx.fill();ctx.shadowBlur=0;
+        ctx.fillStyle="#ffab37";ctx.beginPath();ctx.ellipse(cx,cy-61,15,30,0,0,Math.PI*2);ctx.fill();
+        ctx.fillStyle="#fff5ca";ctx.beginPath();ctx.ellipse(cx,cy-62,7,16,0,0,Math.PI*2);ctx.fill();
+      }
+
+      ctx.fillStyle="#eee7da";ctx.font="600 30px Cormorant Garamond";ctx.fillText((p.n||"Velita").slice(0,25),x+cardW/2,y+253);
+      ctx.fillStyle="#e6c77d";ctx.font="600 24px DM Sans";ctx.fillText(money(p.p||0),x+cardW/2,y+291);
+      ctx.fillStyle="#838b88";ctx.font="400 17px DM Sans";ctx.fillText((p.q||"1 unidad"),x+cardW/2,y+324);
+    }
+
+    const footerY=canvas.height-65;
+    ctx.fillStyle="#bca276";ctx.font="400 18px DM Sans";ctx.fillText("Inventario actualizado · Solo productos disponibles",540,footerY);
+    ctx.fillStyle="#6f7775";ctx.font="400 15px DM Sans";ctx.fillText("Luz de Diciembre · 7 de diciembre",540,footerY+28);
 
     return new Promise(resolve=>canvas.toBlob(blob=>resolve({blob,canvas}),"image/png"));
   }
