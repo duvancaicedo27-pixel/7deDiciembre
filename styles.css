@@ -1351,3 +1351,80 @@ linear-gradient(160deg,#0d2528,#061116);position:relative;overflow:hidden;text-a
     line-height:.67!important;
   }
 }
+
+/* ===== HERO MÓVIL — GRANDE, LEGIBLE Y AJUSTADO ===== */
+@media (max-width:900px){
+  .hero{
+    border-radius:0 0 24px 24px!important;
+    box-shadow:0 16px 40px rgba(0,0,0,.20)!important;
+  }
+  .hero-image{
+    height:320px!important;
+    min-height:320px!important;
+    background-size:auto 320px!important;
+    background-position:72% center!important;
+    background-repeat:no-repeat!important;
+  }
+  .mobile-hero-copy{
+    padding:25px clamp(18px,5vw,30px) 30px!important;
+    text-align:left!important;
+  }
+  .mobile-hero-copy .kicker{
+    font-size:10px!important;
+    letter-spacing:3px!important;
+    margin-bottom:2px!important;
+  }
+  .mobile-hero-copy h1{
+    font-size:58px!important;
+    line-height:.82!important;
+    letter-spacing:-.7px!important;
+    margin:10px 0 15px!important;
+    max-width:100%!important;
+  }
+  .mobile-hero-copy h1 em{
+    font-size:77px!important;
+    line-height:.70!important;
+  }
+  .mobile-hero-copy p{
+    max-width:330px!important;
+    font-size:14px!important;
+    line-height:1.48!important;
+  }
+  .mobile-actions{
+    max-width:330px!important;
+    margin-top:17px!important;
+  }
+  .mobile-actions .gold-btn{
+    min-height:50px!important;
+    font-size:12px!important;
+    letter-spacing:.2px!important;
+  }
+}
+@media (max-width:620px){
+  .hero-image{
+    height:300px!important;
+    min-height:300px!important;
+    background-size:auto 300px!important;
+    background-position:71% center!important;
+  }
+  .mobile-hero-copy{
+    padding:24px 18px 30px!important;
+  }
+  .mobile-hero-copy .kicker{
+    font-size:9px!important;
+    letter-spacing:2.7px!important;
+  }
+  .mobile-hero-copy h1{
+    font-size:53px!important;
+    line-height:.82!important;
+    margin:9px 0 14px!important;
+  }
+  .mobile-hero-copy h1 em{
+    font-size:70px!important;
+    line-height:.70!important;
+  }
+  .mobile-hero-copy p{
+    font-size:13.5px!important;
+    line-height:1.5!important;
+  }
+}
