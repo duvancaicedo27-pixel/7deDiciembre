@@ -1152,3 +1152,36 @@ h2,h3{font-family:"Cormorant Garamond",serif;font-weight:600;margin:0}.story h2,
 
 /* Hide the public admin trigger everywhere; the owner gets the hidden gesture. */
 .admin-trigger{display:none!important}
+
+/* ===== PORTADA MÓVIL SIN RECORTE ===== */
+@media (max-width:900px){
+  .hero{
+    width:100%!important;
+    max-width:none!important;
+    height:auto!important;
+    min-height:0!important;
+    aspect-ratio:auto!important;
+    overflow:hidden!important;
+  }
+  .hero-image{
+    position:relative!important;
+    inset:auto!important;
+    display:block!important;
+    width:100%!important;
+    height:calc(100vw * 784 / 2007)!important;
+    min-height:0!important;
+    max-height:none!important;
+    background-size:100% 100%!important;
+    background-position:center center!important;
+    background-repeat:no-repeat!important;
+  }
+  .mobile-hero-copy{
+    margin:0!important;
+    position:relative!important;
+  }
+}
+@media (max-width:620px){
+  .hero-image{
+    height:calc(100vw * 784 / 2007)!important;
+  }
+}
