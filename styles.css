@@ -786,3 +786,26 @@ h2,h3{font-family:"Cormorant Garamond",serif;font-weight:600;margin:0}.story h2,
     background-repeat:no-repeat !important;
   }
 }
+
+/* ===== PORTADA CELULAR: IMAGEN COMPLETA SIN RECORTE ===== */
+@media (max-width: 620px){
+  .hero{
+    width:100% !important;
+    max-width:none !important;
+    min-height:0 !important;
+    height:auto !important;
+    aspect-ratio:auto !important;
+    overflow:visible !important;
+    background:#061116 !important;
+  }
+  .hero-image{
+    position:relative !important;
+    inset:auto !important;
+    width:100% !important;
+    height:auto !important;
+    aspect-ratio:2007 / 784 !important;
+    background-size:100% 100% !important;
+    background-position:center center !important;
+    background-repeat:no-repeat !important;
+  }
+}
