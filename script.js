@@ -375,3 +375,46 @@ render();renderCart();
     }
   },{passive:false});
 })();
+
+/* ============================================================
+   ADMIN MÓVIL V3 — 5 TOQUES RÁPIDOS EN EL LOGO
+   ============================================================ */
+(function(){
+  const logo=document.getElementById("brandLogo");
+  const adminBtn=document.getElementById("adminOpen");
+  if(!logo || !adminBtn) return;
+
+  let taps=0;
+  let timer=null;
+  let lastTap=0;
+
+  function reset(){
+    taps=0;
+    if(timer) clearTimeout(timer);
+    timer=null;
+  }
+
+  logo.addEventListener("pointerup", function(ev){
+    if(!window.matchMedia("(max-width:900px)").matches) return;
+    if(ev.pointerType==="mouse") return;
+
+    ev.preventDefault();
+    ev.stopPropagation();
+
+    const now=Date.now();
+    if(now-lastTap < 70) return;
+    lastTap=now;
+
+    taps++;
+    if(timer) clearTimeout(timer);
+    timer=setTimeout(reset,1500);
+
+    if(taps===5){
+      reset();
+      const pin=prompt("Acceso privado");
+      if(pin==="0712"){
+        adminBtn.click();
+      }
+    }
+  }, {passive:false});
+})();
