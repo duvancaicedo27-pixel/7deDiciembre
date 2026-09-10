@@ -550,307 +550,229 @@ h2,h3{font-family:"Cormorant Garamond",serif;font-weight:600;margin:0}.story h2,
   .pdf-download{width:100%;justify-content:center}
 }
 
-/* ===== SECCIÓN HISTORIA: MÁS EMOCIONAL Y CONECTADA CON LA MARCA ===== */
-.story{
-  grid-template-columns:.95fr 1.05fr;
-  gap:46px;
-  align-items:center;
-  padding:54px 0 60px;
-}
-.story-art{
-  height:400px;
-  position:relative;
-  overflow:hidden;
-  border-radius:25px;
-  border:1px solid rgba(239,196,104,.20);
-  background:
-    radial-gradient(circle at 50% 43%,rgba(247,180,56,.20),transparent 27%),
-    radial-gradient(circle at 22% 83%,rgba(16,76,54,.22),transparent 28%),
-    linear-gradient(155deg,#0d2427,#071116);
-}
-.story-art:before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:
-    radial-gradient(circle at 80% 22%,rgba(90,25,35,.14),transparent 22%),
-    radial-gradient(circle at 55% 54%,rgba(255,191,70,.10),transparent 30%);
-}
-.story-art-glow{
-  position:absolute;
-  width:280px;
-  height:280px;
-  left:50%;
-  top:48%;
-  transform:translate(-50%,-50%);
-  border-radius:50%;
-  background:radial-gradient(circle,rgba(248,181,55,.18),rgba(248,160,35,.06) 30%,transparent 68%);
-  filter:blur(10px);
-  animation:storyGlow 2.7s ease-in-out infinite;
-}
-.story-art>span{
-  z-index:5;
-  top:20px;
-  left:20px;
-}
-.story-candle{
-  z-index:3;
-  width:132px;
-  height:202px;
-  bottom:48px;
-  background:linear-gradient(90deg,#9f743d,#efca77 40%,#fff0b8 53%,#b4813e);
-  box-shadow:
-    inset 14px 0 20px rgba(255,255,255,.13),
-    inset -18px 0 23px rgba(74,37,5,.16),
-    0 20px 45px rgba(0,0,0,.35);
-}
-.story-candle:before,
-.story-candle:after{
-  content:"";
-  position:absolute;
-  top:4px;
-  border-radius:0 0 11px 11px;
-  background:linear-gradient(180deg,#f2d489,#b88c4c);
-}
-.story-candle:before{left:23px;width:17px;height:58px}
-.story-candle:after{right:23px;width:19px;height:80px}
-.story-flame{
-  bottom:232px;
-  z-index:5;
-  width:34px;
-  height:63px;
-  background:
-    radial-gradient(circle at 50% 76%,#fff9d8 0 14%,#ffd57e 31%,#ff942b 56%,transparent 75%);
-  filter:drop-shadow(0 0 12px rgba(255,176,49,.85));
-  animation:flicker 1.05s ease-in-out infinite;
-}
-.story-copy>p+p{margin-top:9px}
-.story-copy strong{color:#e7ddca;font-weight:600}
-.story-values{
-  display:grid;
-  gap:9px;
-  margin-top:22px;
-  max-width:560px;
-}
-.story-value{
-  display:flex;
-  align-items:center;
-  gap:11px;
-  padding:9px 0;
-  border-top:1px solid rgba(239,196,104,.08);
-}
-.story-value b{
-  width:30px;height:30px;flex:0 0 30px;
-  border:1px solid rgba(239,196,104,.18);
-  border-radius:50%;
-  display:grid;place-items:center;
-  color:#efca7e;font-weight:500;
-}
-.story-value strong{
-  display:block;
-  color:#ded6c7;
-  font-size:11px;
-}
-.story-value small{
-  display:block;
-  color:#757c79;
-  font-size:9px;
-  margin-top:2px;
-}
-@keyframes storyGlow{
-  0%,100%{opacity:.65;transform:translate(-50%,-50%) scale(.95)}
-  50%{opacity:1;transform:translate(-50%,-50%) scale(1.08)}
-}
-@media(max-width:900px){
-  .story{grid-template-columns:1fr;gap:25px;padding:42px 0 48px}
-  .story-art{height:350px}
-}
-@media(max-width:620px){
-  .story{padding:35px 0 43px}
-  .story-art{height:310px;border-radius:22px}
-  .story-candle{width:112px;height:172px;bottom:42px}
-  .story-flame{bottom:198px;width:30px;height:55px}
-  .story-copy>p{font-size:13px}
-  .story-values{margin-top:17px}
+/* ===== RESPONSIVE FINAL: CELULAR INDEPENDIENTE, PC SIN CAMBIOS ===== */
+
+/* Never expose administrator in the public header. */
+.admin-trigger{display:none!important}
+
+/* Mobile-specific header/menu state, activated by media OR JS device class. */
+@media (max-width: 900px), (pointer: coarse) and (hover: none){
+  html,body{
+    width:100%;
+    max-width:100%;
+    overflow-x:hidden;
+  }
+
+  .header{
+    width:100%!important;
+    height:64px!important;
+    padding:0 16px!important;
+  }
+
+  .header > nav{
+    display:none!important;
+  }
+
+  .header > nav.mobile-open{
+    display:flex!important;
+    position:absolute!important;
+    top:58px!important;
+    right:12px!important;
+    left:auto!important;
+    width:min(285px,calc(100vw - 24px))!important;
+    padding:10px!important;
+    flex-direction:column!important;
+    align-items:stretch!important;
+    gap:3px!important;
+    background:rgba(7,19,24,.98)!important;
+    border:1px solid rgba(239,196,104,.18)!important;
+    border-radius:16px!important;
+    box-shadow:0 22px 50px rgba(0,0,0,.4)!important;
+    backdrop-filter:blur(13px)!important;
+  }
+  .header > nav.mobile-open a{
+    color:#e5dfd3!important;
+    text-decoration:none!important;
+    padding:12px 11px!important;
+    border-radius:10px!important;
+  }
+  .header > nav.mobile-open a:hover{
+    background:rgba(239,196,104,.06)!important;
+    color:#f4d486!important;
+  }
+  .header > nav.mobile-open button{
+    width:100%!important;
+    margin-top:4px!important;
+  }
+
+  .header .menu{
+    display:flex!important;
+    width:40px!important;
+    height:40px!important;
+    align-items:center!important;
+    justify-content:center!important;
+    border:1px solid rgba(239,196,104,.17)!important;
+    border-radius:50%!important;
+    color:#eee8dc!important;
+    background:transparent!important;
+  }
+
+  /* The desktop composition is NOT squeezed into the phone.
+     Show only the photographic right side of the approved artwork, then
+     present the interactive copy once below it. */
+  .hero{
+    width:100%!important;
+    max-width:none!important;
+    min-height:0!important;
+    aspect-ratio:auto!important;
+    height:auto!important;
+    overflow:hidden!important;
+  }
+
+  .hero-image{
+    position:relative!important;
+    inset:auto!important;
+    width:100%!important;
+    height:270px!important;
+    background-size:auto 270px!important;
+    background-position:right center!important;
+    background-repeat:no-repeat!important;
+  }
+
+  .real-flame-pro,
+  .hotspot{
+    display:none!important;
+  }
+
+  .mobile-hero-copy{
+    display:block!important;
+    position:relative!important;
+    margin:0!important;
+    padding:29px 18px 32px!important;
+    background:
+      radial-gradient(circle at 82% 0,rgba(239,184,67,.08),transparent 30%),
+      #061116!important;
+  }
+  .mobile-hero-copy .kicker{
+    font-size:9px!important;
+    letter-spacing:2.5px!important;
+  }
+  .mobile-hero-copy h1{
+    font:600 49px/.86 "Cormorant Garamond",serif!important;
+    letter-spacing:-.6px!important;
+    margin:11px 0 15px!important;
+  }
+  .mobile-hero-copy h1 em{
+    font:400 66px/.74 "Parisienne",cursive!important;
+    color:#f7d791!important;
+  }
+  .mobile-hero-copy p{
+    margin:0!important;
+    max-width:390px!important;
+    color:#c8c4bb!important;
+    font-size:14px!important;
+    line-height:1.55!important;
+  }
+  .mobile-actions{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:9px!important;
+    margin-top:18px!important;
+  }
+  .mobile-actions .gold-btn,
+  .mobile-actions .outline-btn{
+    width:100%!important;
+    min-height:50px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+  }
+
+  .story,
+  .catalog,
+  .share{
+    width:calc(100% - 28px)!important;
+  }
+  .story{
+    grid-template-columns:1fr!important;
+    gap:23px!important;
+    padding:37px 0 45px!important;
+  }
+  .story-art{
+    height:305px!important;
+  }
+  .products{
+    grid-template-columns:1fr!important;
+  }
+  .section-title{
+    align-items:flex-start!important;
+    flex-direction:column!important;
+  }
+  .catalog-tools{
+    width:100%!important;
+    display:flex!important;
+    flex-direction:column!important;
+    gap:8px!important;
+  }
+  .catalog-tools .pdf-download,
+  .catalog-tools .text-link{
+    width:100%!important;
+    justify-content:center!important;
+    text-align:center!important;
+  }
+  .filters{
+    overflow-x:auto!important;
+    flex-wrap:nowrap!important;
+    padding-bottom:4px!important;
+  }
+  .filter{
+    white-space:nowrap!important;
+    flex:0 0 auto!important;
+  }
+  .share{
+    grid-template-columns:1fr!important;
+    margin-bottom:45px!important;
+  }
+  .share-copy{
+    padding:28px 20px!important;
+  }
+  .share-art{
+    min-height:240px!important;
+  }
+  .footer{
+    width:calc(100% - 28px)!important;
+    padding-bottom:95px!important;
+    flex-wrap:wrap!important;
+    gap:6px!important;
+  }
 }
 
-/* ===== HISTORIA: COMPACTA + VELA ESTILO HERO ===== */
-.story{
-  grid-template-columns:.95fr 1.05fr!important;
-  gap:46px!important;
-  align-items:center!important;
-  padding:52px 0 58px!important;
-}
-.story-art{
-  height:395px!important;
-  border-radius:25px!important;
-  position:relative!important;
-  overflow:hidden!important;
-  border:1px solid rgba(239,196,104,.20)!important;
-  background:
-    radial-gradient(circle at 51% 42%,rgba(255,187,65,.21),transparent 28%),
-    radial-gradient(circle at 16% 82%,rgba(12,76,53,.20),transparent 29%),
-    linear-gradient(155deg,#0d2528,#061116)!important;
-}
-.story-art-glow{
-  position:absolute!important;
-  width:280px!important;height:280px!important;
-  left:50%!important;top:51%!important;
-  transform:translate(-50%,-50%)!important;
-  border-radius:50%!important;
-  background:radial-gradient(circle,rgba(255,186,62,.19),rgba(255,145,37,.055) 33%,transparent 69%)!important;
-  filter:blur(11px)!important;
-  animation:storyGlow 2.6s ease-in-out infinite!important;
-}
-.story-label{
-  position:absolute!important;
-  z-index:8!important;
-  left:22px!important;top:20px!important;
-  border:1px solid rgba(239,196,104,.2)!important;
-  border-radius:999px!important;
-  padding:8px 12px!important;
-  font-size:8px!important;
-  letter-spacing:1.8px!important;
-  color:#cfb57f!important;
-}
-.story-candle{
-  position:absolute!important;
-  z-index:4!important;
-  left:50%!important;
-  bottom:48px!important;
-  transform:translateX(-50%)!important;
-  width:145px!important;
-  height:220px!important;
-  border-radius:22px 22px 18px 18px!important;
-  background:linear-gradient(90deg,#9b733e 0%,#eec873 30%,#fff0b8 51%,#d0a151 77%,#956a39 100%)!important;
-  box-shadow:
-    inset 14px 0 21px rgba(255,255,255,.16),
-    inset -18px 0 22px rgba(77,39,5,.17),
-    0 18px 48px rgba(0,0,0,.38)!important;
-}
-.story-sheen{
-  position:absolute!important;left:29px!important;top:14px!important;
-  width:35px!important;height:150px!important;border-radius:25px!important;
-  background:linear-gradient(180deg,rgba(255,255,255,.46),transparent)!important;
-  filter:blur(7px)!important;opacity:.37!important;
-}
-.story-drip{position:absolute!important;top:3px!important;border-radius:0 0 12px 12px!important;background:linear-gradient(180deg,#f1d486,#b88847)!important}
-.story-drip-1{left:28px!important;width:18px!important;height:58px!important}
-.story-drip-2{left:92px!important;width:20px!important;height:84px!important}
-.story-drip-3{right:19px!important;width:16px!important;height:43px!important}
-.story-wick{
-  position:absolute!important;
-  z-index:7!important;
-  width:4px!important;height:27px!important;
-  left:50%!important;
-  bottom:264px!important;
-  margin-left:-2px!important;
-  border-radius:5px!important;
-  background:#2d1a10!important;
-}
-.story-flame{
-  position:absolute!important;
-  z-index:8!important;
-  left:50%!important;
-  bottom:280px!important;
-  width:49px!important;
-  height:88px!important;
-  margin-left:-24.5px!important;
-  transform-origin:50% 86%!important;
-  border-radius:55% 45% 53% 47%!important;
-  background:radial-gradient(circle at 50% 74%,#fffbe2 0 13%,#ffe09a 25%,#ffab35 50%,#e66a1f 73%,transparent 76%)!important;
-  filter:drop-shadow(0 0 15px rgba(255,174,54,.82))!important;
-  animation:storyFlameBody 1.12s ease-in-out infinite!important;
-}
-.story-flame-core{
-  position:absolute!important;
-  z-index:2!important;
-  left:35%!important;top:27%!important;
-  width:30%!important;height:51%!important;
-  border-radius:55% 45% 54% 46%!important;
-  background:linear-gradient(180deg,#fff,#fff7d2 55%,#ffe2a2)!important;
-  animation:storyFlameCore .66s ease-in-out infinite!important;
-}
-.story-flame-blue{
-  position:absolute!important;
-  left:43%!important;top:72%!important;
-  width:15%!important;height:21%!important;
-  border-radius:60% 40% 55% 45%!important;
-  background:linear-gradient(180deg,rgba(90,174,255,.88),rgba(91,99,248,.08) 84%,transparent)!important;
-  filter:blur(.65px)!important;
-  animation:storyBlue .7s ease-in-out infinite!important;
-}
-.story-copy h2{margin:14px 0 15px!important}
-.story-copy>p{max-width:620px!important;color:#bcb9b2!important;line-height:1.62!important;font-size:14px!important}
-.story-copy>p+p{margin-top:7px!important}
-.story-values,.feature-list{display:none!important}
-@keyframes storyFlameBody{
-  0%,100%{transform:rotate(-2deg) scale(1,1)}
-  22%{transform:rotate(4deg) scale(.96,1.05)}
-  46%{transform:rotate(-6deg) scale(1.04,.98)}
-  68%{transform:rotate(3deg) scale(.98,1.04)}
-  84%{transform:rotate(-2deg) scale(1.02,.98)}
-}
-@keyframes storyFlameCore{
-  0%,100%{transform:translateX(0) scale(1)}
-  34%{transform:translateX(10%) scale(.86,1.06)}
-  68%{transform:translateX(-9%) scale(1.06,.95)}
-}
-@keyframes storyBlue{
-  0%,100%{opacity:.68;transform:translateX(0) scale(1)}
-  45%{opacity:1;transform:translateX(8%) scale(.84,1.08)}
-  75%{opacity:.58;transform:translateX(-6%) scale(1.06,.92)}
-}
-@keyframes storyGlow{
-  0%,100%{opacity:.64;transform:translate(-50%,-50%) scale(.95)}
-  50%{opacity:1;transform:translate(-50%,-50%) scale(1.08)}
-}
-@media(max-width:900px){
-  .story{grid-template-columns:1fr!important;gap:25px!important;padding:42px 0 48px!important}
-  .story-art{height:350px!important}
-}
-@media(max-width:620px){
-  .story{padding:35px 0 43px!important}
-  .story-art{height:310px!important;border-radius:22px!important}
-  .story-candle{width:112px!important;height:173px!important;bottom:39px!important}
-  .story-wick{bottom:208px!important}
-  .story-flame{bottom:223px!important;width:39px!important;height:70px!important;margin-left:-19.5px!important}
-  .story-copy>p{font-size:13px!important}
+@media (max-width:620px), (pointer: coarse) and (hover: none){
+  .hero-image{
+    height:235px!important;
+    background-size:auto 235px!important;
+    background-position:right center!important;
+  }
+  .mobile-hero-copy{
+    padding:24px 17px 30px!important;
+  }
+  .mobile-hero-copy h1{
+    font-size:46px!important;
+  }
+  .mobile-hero-copy h1 em{
+    font-size:62px!important;
+  }
+  .mobile-hero-copy p{
+    font-size:13px!important;
+  }
 }
 
-/* HOTFIX MOBILE V2 */
-@media (max-width: 900px){
-  html,body{width:100%;max-width:100%;overflow-x:hidden}
-  .header{width:100%!important;padding:0 16px!important;height:64px!important}
-  .header > nav{display:none!important}
-  .header .menu{display:flex!important;width:40px!important;height:40px!important;align-items:center!important;justify-content:center!important;}
-  .hero{width:100%!important;max-width:none!important;aspect-ratio:auto!important;min-height:0!important;height:auto!important;overflow:hidden!important}
-  .hero-image{position:relative!important;inset:auto!important;width:100%!important;height:250px!important;background-size:auto 250px!important;background-position:68% center!important;background-repeat:no-repeat!important}
-  .hero-hotspot{display:none!important}
-  .mobile-hero-copy{display:block!important;position:relative!important;margin:0!important;padding:28px 18px 28px!important;background:linear-gradient(180deg,#061116 0%,#061116 100%)!important}
-  .mobile-hero-copy h1{font:600 48px/.88 "Cormorant Garamond",serif!important;margin:11px 0 16px!important;letter-spacing:-.6px!important}
-  .mobile-hero-copy h1 em{font:400 65px/.75 "Parisienne",cursive!important}
-  .mobile-hero-copy p{font-size:14px!important;line-height:1.55!important;max-width:380px!important;margin:0!important}
-  .mobile-actions{display:grid!important;grid-template-columns:1fr!important;gap:9px!important;margin-top:18px!important}
-  .mobile-actions .gold-btn,.mobile-actions .outline-btn{width:100%!important;display:flex!important;justify-content:center!important;align-items:center!important}
-  .story,.catalog,.share{width:calc(100% - 28px)!important}
-  .story{grid-template-columns:1fr!important;padding:36px 0 45px!important;gap:23px!important}
-  .story-art{height:305px!important}
-  .products{grid-template-columns:1fr!important}
-  .section-title{align-items:flex-start!important;flex-direction:column!important}
-  .section-title .catalog-tools{width:100%!important;display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:8px!important}
-  .catalog-tools .text-link,.catalog-tools .pdf-download{width:100%!important;text-align:center!important;justify-content:center!important}
-  .filters{overflow-x:auto!important;flex-wrap:nowrap!important;padding-bottom:4px!important}
-  .filter{white-space:nowrap!important}
-  .share{grid-template-columns:1fr!important;margin-bottom:45px!important}
-  .share-copy{padding:28px 20px!important}
-  .share-art{min-height:245px!important}
-  .footer{width:calc(100% - 28px)!important;padding-bottom:95px!important;flex-wrap:wrap!important}
-}
-@media (max-width:620px){
-  .hero-image{height:215px!important;background-size:auto 215px!important;background-position:72% center!important}
-  .mobile-hero-copy{padding:24px 16px 28px!important}
-  .mobile-hero-copy h1{font-size:46px!important}
-  .mobile-hero-copy h1 em{font-size:62px!important}
-  .mobile-hero-copy p{font-size:13px!important}
+.mobile-device .header > nav{display:none!important}
+.mobile-device .header .menu{display:flex!important}
+.mobile-device .hero{width:100%!important;max-width:none!important;min-height:0!important;aspect-ratio:auto!important;height:auto!important}
+.mobile-device .hero-image{position:relative!important;height:270px!important;background-size:auto 270px!important;background-position:right center!important}
+.mobile-device .hero-hotspot,.mobile-device .real-flame-pro{display:none!important}
+.mobile-device .mobile-hero-copy{display:block!important;position:relative!important;margin:0!important}
+@media(max-width:620px){
+  .mobile-device .hero-image{height:235px!important;background-size:auto 235px!important}
 }
