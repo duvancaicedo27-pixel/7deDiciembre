@@ -101,10 +101,26 @@ render();renderCart();
     {id:5,n:"Vela Clásica",p:9000,q:"1 unidad",t:"Para el hogar",c:"hogar",d:"Simple, cálida y perfecta para el alumbrado.",available:true,image:""},
     {id:6,n:"Pack Compartir",p:25000,q:"6 velitas",t:"Para compartir",c:"compartir",d:"Para encender juntos y llenar la noche de luz.",available:true,image:""}
   ];
-  let adminProducts=JSON.parse(localStorage.getItem(STORAGE)||"null");
-  if(!Array.isArray(adminProducts)){
+  const INIT_KEY="luz_diciembre_products_initialized_v1";
+  let storedProducts=null;
+  try{ storedProducts=JSON.parse(localStorage.getItem(STORAGE)||"null"); }catch(err){ storedProducts=null; }
+
+  // Corrige instalaciones antiguas que dejaron el catálogo en [] sin impedir
+  // que el administrador pueda borrar todos los productos intencionalmente.
+  let adminProducts;
+  if(Array.isArray(storedProducts)){
+    adminProducts=storedProducts;
+    if(!localStorage.getItem(INIT_KEY)){
+      if(adminProducts.length===0){
+        adminProducts=seed.map(p=>({...p}));
+        localStorage.setItem(STORAGE,JSON.stringify(adminProducts));
+      }
+      localStorage.setItem(INIT_KEY,"1");
+    }
+  }else{
     adminProducts=seed.map(p=>({...p}));
     localStorage.setItem(STORAGE,JSON.stringify(adminProducts));
+    localStorage.setItem(INIT_KEY,"1");
   }
 
   const modal=document.getElementById("adminModal");
@@ -172,7 +188,13 @@ render();renderCart();
     document.getElementById("adminNewView").classList.toggle("active",tab==="new");
     if(tab==="products")renderAdmin();
   }
-  function openAdmin(){renderAdmin();resetForm();showTab("products");toggle("adminModal",true)}
+  function openAdmin(){
+    resetForm();
+    showTab("products");
+    toggle("adminModal",true);
+    // Render again after the panel becomes visible to avoid an initial blank/0 state.
+    requestAnimationFrame(()=>requestAnimationFrame(renderAdmin));
+  }
   function closeAdmin(){toggle("adminModal",false)}
 
   document.getElementById("adminOpen")?.addEventListener("click",openAdmin);
