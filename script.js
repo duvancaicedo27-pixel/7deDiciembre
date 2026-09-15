@@ -298,57 +298,34 @@ render();renderCart();
   window.addEventListener("luz:productsChanged",applyAdminCatalog);
 })();
 
-/* ===== ADMIN PRIVADO + CATÁLOGO PDF + ACCESO ===== */
+/* ===== ADMIN PRIVADO + CATÁLOGO PDF ===== */
 (function(){
-  const ADMIN_CODE = "0712";
+  const ADMIN_CODE = "0712"; // Puedes cambiarlo por otro código.
   const STORE_KEY = "luz_diciembre_products_v2";
   const adminModal = document.getElementById("adminModal");
-  const adminButton = document.getElementById("adminOpen");
-  const logo = document.getElementById("brandLogo");
 
-  function openAdminPanel(){
+  // Keep the existing admin panel functional, but remove its public entry point.
+  // Desktop/mobile: Ctrl+Shift+A -> code -> open panel.
+  function openPrivateAdmin(){
+    const code = prompt("Panel privado. Ingresa tu código:");
+    if(code !== ADMIN_CODE) return;
     if(typeof toggle === "function") toggle("adminModal", true);
     else adminModal?.classList.add("open");
   }
-  window.openLuzAdminPanel = openAdminPanel;
-
-  function verifyAndOpen(){
-    const code = window.prompt("Acceso privado\nIngresa tu código:");
-    if(code === ADMIN_CODE) openAdminPanel();
-  }
-
   document.addEventListener("keydown", e=>{
     if(e.ctrlKey && e.shiftKey && e.key.toLowerCase()==="a"){
-      e.preventDefault(); verifyAndOpen();
+      e.preventDefault();
+      openPrivateAdmin();
     }
   });
 
-  if(logo){
-    let taps=0,last=0,timer=null;
-    const reset=()=>{taps=0;if(timer)clearTimeout(timer);timer=null;};
-    logo.addEventListener("pointerup", e=>{
-      if(!window.matchMedia("(max-width:900px)").matches || e.pointerType==="mouse") return;
-      e.preventDefault(); e.stopPropagation();
-      const now=Date.now();
-      if(now-last<90) return;
-      last=now; taps++;
-      if(timer)clearTimeout(timer);
-      timer=setTimeout(reset,1700);
-      if(taps>=5){ reset(); verifyAndOpen(); }
-    }, {passive:false});
-  }
-
-  window.addEventListener("load",()=>{
-    if(location.hash.toLowerCase()==="#admin"){
-      history.replaceState(null,"",location.pathname+location.search);
-      verifyAndOpen();
-    }
-  });
+  // Also expose a private programmatic access point for the owner.
+  window.openLuzAdmin = openPrivateAdmin;
 
   function getAvailableProducts(){
     try{
       const stored=JSON.parse(localStorage.getItem(STORE_KEY)||"null");
-      if(Array.isArray(stored)){
+      if(Array.isArray(stored) && stored.length){
         return stored.filter(p=>p.available!==false);
       }
     }catch(err){}
@@ -357,11 +334,11 @@ render();renderCart();
   function loadJsPdf(){
     return new Promise((resolve,reject)=>{
       if(window.jspdf?.jsPDF){resolve(window.jspdf.jsPDF);return;}
-      const script=document.createElement("script");
-      script.src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";
-      script.onload=()=>window.jspdf?.jsPDF?resolve(window.jspdf.jsPDF):reject(new Error("jsPDF no disponible"));
-      script.onerror=()=>reject(new Error("No se pudo cargar el generador PDF"));
-      document.head.appendChild(script);
+      const s=document.createElement("script");
+      s.src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";
+      s.onload=()=>window.jspdf?.jsPDF?resolve(window.jspdf.jsPDF):reject(new Error("jsPDF no disponible"));
+      s.onerror=()=>reject(new Error("No se pudo cargar el generador PDF"));
+      document.head.appendChild(s);
     });
   }
   function dataImageType(data){
@@ -369,43 +346,167 @@ render();renderCart();
     if(/^data:image\/webp/i.test(data))return "WEBP";
     return "JPEG";
   }
-  function drawWrapped(doc,text,x,y,maxWidth,lineHeight){
-    const lines=doc.splitTextToSize(text,maxWidth);doc.text(lines,x,y);return y+lines.length*lineHeight;
+  function drawWrapped(doc, text, x, y, maxWidth, lineHeight){
+    const lines=doc.splitTextToSize(text,maxWidth);
+    doc.text(lines,x,y);
+    return y + lines.length*lineHeight;
   }
   async function downloadCatalogPDF(){
-    const list=getAvailableProducts();
-    if(!list.length){alert("No hay velitas disponibles para generar el catálogo.");return;}
-    const btn=document.getElementById("downloadCatalogPdf"), old=btn?.innerHTML;
+    const products=getAvailableProducts();
+    if(!products.length){
+      alert("No hay velitas disponibles para generar el catálogo.");
+      return;
+    }
+    const btn=document.getElementById("downloadCatalogPdf");
+    const old=btn?.innerHTML;
     if(btn){btn.disabled=true;btn.innerHTML="Preparando catálogo…";}
     try{
       const jsPDF=await loadJsPdf();
       const doc=new jsPDF({orientation:"portrait",unit:"mm",format:"a4"});
       const W=210,H=297;
+      // Background
       doc.setFillColor(6,17,22);doc.rect(0,0,W,H,"F");
-      doc.setTextColor(245,232,203);doc.setFont("times","bold");doc.setFontSize(30);doc.text("LUZ DE DICIEMBRE",20,32);
-      doc.setFont("times","normal");doc.setTextColor(223,184,103);doc.setFontSize(18);doc.text("7 de diciembre · Tradición que ilumina",20,44);
-      doc.setTextColor(180,180,175);doc.setFont("helvetica","normal");doc.setFontSize(10);doc.text("Catálogo de velitas disponibles",20,56);
+      doc.setTextColor(245,232,203);
+      doc.setFont("times","bold");doc.setFontSize(30);
+      doc.text("LUZ DE DICIEMBRE",20,32);
+      doc.setFont("times","normal");doc.setTextColor(223,184,103);doc.setFontSize(18);
+      doc.text("7 de diciembre · Tradición que ilumina",20,44);
+      doc.setTextColor(180,180,175);doc.setFont("helvetica","normal");doc.setFontSize(10);
+      doc.text("Catálogo de velitas disponibles",20,56);
       doc.setDrawColor(180,137,62);doc.setLineWidth(.3);doc.line(20,63,190,63);
-      let y=78; const cardH=61,colW=82;
-      list.forEach((p,idx)=>{
-        const col=idx%2,x=20+col*(colW+10);
-        if(idx>0&&col===0)y+=cardH+10;
-        if(y+cardH>275){doc.addPage();doc.setFillColor(6,17,22);doc.rect(0,0,W,H,"F");y=22;}
-        doc.setFillColor(12,28,34);doc.roundedRect(x,y,colW,cardH,4,4,"F");doc.setDrawColor(110,87,46);doc.roundedRect(x,y,colW,cardH,4,4,"S");
-        if(p.image&&/^data:image\//.test(p.image)){try{doc.addImage(p.image,dataImageType(p.image),x+4,y+4,28,33,undefined,"FAST");}catch(err){}}
-        else{doc.setFillColor(28,50,50);doc.circle(x+18,y+20,12,"F");doc.setTextColor(238,197,108);doc.setFontSize(16);doc.text("✦",x+15,y+24);}
-        doc.setTextColor(243,225,188);doc.setFont("times","bold");doc.setFontSize(14);doc.text(doc.splitTextToSize(p.n||"Velita",47),x+36,y+13);
-        doc.setTextColor(200,170,104);doc.setFont("helvetica","bold");doc.setFontSize(10);doc.text(new Intl.NumberFormat("es-CO",{style:"currency",currency:"COP",maximumFractionDigits:0}).format(p.p||0),x+36,y+29);
-        doc.setTextColor(150,155,152);doc.setFont("helvetica","normal");doc.setFontSize(8);doc.text(p.q||"1 unidad",x+36,y+37);drawWrapped(doc,(p.d||"").slice(0,130),x+36,y+45,42,3.6);
+
+      let y=78;
+      const cardH=61;
+      const colW=82;
+      products.forEach((p,idx)=>{
+        const col=(idx%2), row=Math.floor(idx/2);
+        const x=20+col*(colW+10);
+        if(idx>0 && col===0) y += cardH+10;
+        if(y+cardH>275){
+          doc.addPage();doc.setFillColor(6,17,22);doc.rect(0,0,W,H,"F");
+          y=22;
+        }
+        doc.setFillColor(12,28,34);doc.roundedRect(x,y,colW,cardH,4,4,"F");
+        doc.setDrawColor(110,87,46);doc.roundedRect(x,y,colW,cardH,4,4,"S");
+        if(p.image && /^data:image\//.test(p.image)){
+          try{doc.addImage(p.image,dataImageType(p.image),x+4,y+4,28,33,undefined,"FAST");}
+          catch(err){/* keep the card without image */}
+        }else{
+          doc.setFillColor(28,50,50);doc.circle(x+18,y+20,12,"F");
+          doc.setTextColor(238,197,108);doc.setFontSize(16);doc.text("✦",x+15,y+24);
+        }
+        doc.setTextColor(243,225,188);doc.setFont("times","bold");doc.setFontSize(14);
+        const titleLines=doc.splitTextToSize(p.n||"Velita",47);
+        doc.text(titleLines,x+36,y+13);
+        doc.setTextColor(200,170,104);doc.setFont("helvetica","bold");doc.setFontSize(10);
+        doc.text(new Intl.NumberFormat("es-CO",{style:"currency",currency:"COP",maximumFractionDigits:0}).format(p.p||0),x+36,y+29);
+        doc.setTextColor(150,155,152);doc.setFont("helvetica","normal");doc.setFontSize(8);
+        doc.text(p.q||"1 unidad",x+36,y+37);
+        const desc=(p.d||"").slice(0,130);
+        drawWrapped(doc,desc,x+36,y+45,42,3.6);
       });
-      const pages=doc.getNumberOfPages();
-      for(let page=1;page<=pages;page++){doc.setPage(page);doc.setTextColor(120,125,122);doc.setFont("helvetica","normal");doc.setFontSize(7);doc.text(`Luz de Diciembre · Página ${page} de ${pages}`,20,289);doc.text("Pedidos por WhatsApp",190,289,{align:"right"});}
+
+      const totalPages=doc.getNumberOfPages();
+      for(let page=1;page<=totalPages;page++){
+        doc.setPage(page);
+        doc.setTextColor(120,125,122);doc.setFont("helvetica","normal");doc.setFontSize(7);
+        doc.text(`Luz de Diciembre · Página ${page} de ${totalPages}`,20,289);
+        doc.text("Pedidos por WhatsApp",190,289,{align:"right"});
+      }
+
       doc.save("catalogo-luz-de-diciembre.pdf");
-    }catch(err){console.error(err);alert("No fue posible generar el PDF en este momento. Comprueba que tienes conexión a Internet e inténtalo de nuevo.");}
-    finally{if(btn){btn.disabled=false;btn.innerHTML=old||"↓ Descargar catálogo PDF";}}
+    }catch(err){
+      console.error(err);
+      alert("No fue posible generar el PDF en este momento. Comprueba que tienes conexión a Internet e inténtalo de nuevo.");
+    }finally{
+      if(btn){btn.disabled=false;btn.innerHTML=old||"↓ Descargar catálogo PDF";}
+    }
   }
   document.getElementById("downloadCatalogPdf")?.addEventListener("click",downloadCatalogPDF);
   window.downloadLuzCatalogPDF=downloadCatalogPDF;
+})();
+
+/* ===== ACCESO ADMIN EN CELULAR: 5 TOQUES RÁPIDOS ===== */
+(function(){
+  const logo=document.getElementById("brandLogo");
+  const adminButton=document.getElementById("adminOpen");
+  if(!logo || !adminButton) return;
+
+  let taps=0;
+  let resetTimer=null;
+  let lastPointer=0;
+
+  function reset(){
+    taps=0;
+    if(resetTimer) clearTimeout(resetTimer);
+    resetTimer=null;
+  }
+
+  logo.addEventListener("pointerup",(event)=>{
+    const mobile=window.matchMedia("(max-width:900px)").matches;
+    if(!mobile) return;
+    if(event.pointerType==="mouse" && event.detail!==0) return;
+
+    event.preventDefault();
+    const now=Date.now();
+    if(now-lastPointer<80) return;
+    lastPointer=now;
+
+    taps+=1;
+    if(resetTimer) clearTimeout(resetTimer);
+    resetTimer=setTimeout(reset,1500);
+
+    if(taps===5){
+      reset();
+      const code=prompt("Acceso privado");
+      if(code==="0712"){
+        adminButton.click();
+      }
+    }
+  },{passive:false});
+})();
+
+/* ============================================================
+   ADMIN MÓVIL V3 — 5 TOQUES RÁPIDOS EN EL LOGO
+   ============================================================ */
+(function(){
+  const logo=document.getElementById("brandLogo");
+  const adminBtn=document.getElementById("adminOpen");
+  if(!logo || !adminBtn) return;
+
+  let taps=0;
+  let timer=null;
+  let lastTap=0;
+
+  function reset(){
+    taps=0;
+    if(timer) clearTimeout(timer);
+    timer=null;
+  }
+
+  logo.addEventListener("pointerup", function(ev){
+    if(!window.matchMedia("(max-width:900px)").matches) return;
+    if(ev.pointerType==="mouse") return;
+
+    ev.preventDefault();
+    ev.stopPropagation();
+
+    const now=Date.now();
+    if(now-lastTap < 70) return;
+    lastTap=now;
+
+    taps++;
+    if(timer) clearTimeout(timer);
+    timer=setTimeout(reset,1500);
+
+    if(taps===5){
+      reset();
+      const pin=prompt("Acceso privado");
+      if(pin==="0712"){
+        adminBtn.click();
+      }
+    }
+  }, {passive:false});
 })();
 
 /* ===== CART: ELIMINAR PRODUCTO COMPLETO ===== */
@@ -605,6 +706,31 @@ render();renderCart();
       const pin=prompt("Acceso privado");
       if(pin==="0712")adminButton.click();
       history.replaceState(null,"",location.pathname+location.search);
+    }
+  });
+})();
+
+/* ===== ADMIN PC + FALLBACK ===== */
+(function(){
+  const adminButton=document.getElementById('adminOpen');
+  if(!adminButton)return;
+  const ADMIN_CODE='0712';
+  const askAndOpen=()=>{
+    const code=window.prompt('Panel privado. Ingresa tu código:');
+    if(code===ADMIN_CODE){
+      adminButton.click();
+    }
+  };
+  document.addEventListener('keydown',e=>{
+    if(e.ctrlKey && e.shiftKey && String(e.key).toLowerCase()==='a'){
+      e.preventDefault();
+      askAndOpen();
+    }
+  });
+  window.addEventListener('load',()=>{
+    if(window.location.hash.toLowerCase()==='#admin'){
+      history.replaceState(null,'',window.location.pathname+window.location.search);
+      setTimeout(askAndOpen,120);
     }
   });
 })();
