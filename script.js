@@ -1,22 +1,354 @@
-/* ===== ADMIN PRIVADO + CATÁLOGO PDF ===== */
+const WHATSAPP="573217691827";
+const products=[
+{id:1,n:"Vela Burbuja",p:12000,q:"1 unidad",t:"Para regalar",c:"regalo",d:"Un diseño moderno y delicado, perfecto para regalar o consentir."},
+{id:2,n:"Vela en Frasco",p:15000,q:"1 unidad",t:"Para el hogar",c:"hogar",d:"Elegancia y calidez en un solo detalle."},
+{id:3,n:"Vela Árbol Navideño",p:14000,q:"1 unidad",t:"Para compartir",c:"compartir",d:"Un toque mágico para esta temporada."},
+{id:4,n:"Vela Estrella",p:10000,q:"1 unidad",t:"Para regalar",c:"regalo",d:"Un pequeño detalle para una noche especial."},
+{id:5,n:"Vela Clásica",p:9000,q:"1 unidad",t:"Para el hogar",c:"hogar",d:"Simple, cálida y perfecta para el alumbrado."},
+{id:6,n:"Pack Compartir",p:25000,q:"6 velitas",t:"Para compartir",c:"compartir",d:"Para encender juntos y llenar la noche de luz."}];
+let cart=JSON.parse(localStorage.getItem("ld_cart")||"[]");
+const money=n=>new Intl.NumberFormat("es-CO",{style:"currency",currency:"COP",maximumFractionDigits:0}).format(n);
+const openWA=m=>window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(m)}`,"_blank");
+const toggle=(id,on)=>{const e=document.getElementById(id);e.classList.toggle("open",on);e.setAttribute("aria-hidden",String(!on));};
+
+function stickerList(p){
+  return Array.isArray(p.stickers)?p.stickers.filter(s=>s&&s.name):[];
+}
+function productVisual(p, stickerId){
+  const stickers=stickerList(p);
+  const s=stickers.find(v=>String(v.id)===String(stickerId));
+  return s?.image || p.image || "";
+}
+function add(id, stickerId="base"){
+  const f=cart.find(x=>x.id===id && String(x.sticker||"base")===String(stickerId));
+  f?f.qty++:cart.push({id,qty:1,sticker:stickerId||"base"});
+  save();
+}
+function render(filter="todos"){
+ const list=filter==="todos"?products:products.filter(p=>p.c===filter);
+ document.getElementById("products").innerHTML=list.map(p=>{
+   const stickers=stickerList(p);
+   const firstSticker=stickers[0];
+   const displayImage=productVisual(p, firstSticker?.id||"base");
+   const stickerControl=stickers.length?`<div class="sticker-choice"><label>Diseño de sticker</label><select class="sticker-select" data-sticker-select="${p.id}"><option value="base">Original</option>${stickers.map(s=>`<option value="${String(s.id)}">${escapeHtml(s.name)}</option>`).join("")}</select></div>`:"";
+   return `<article class="product" data-product-card="${p.id}"><div class="product-image">${displayImage?`<img class="product-photo" data-product-image src="${displayImage}" alt="${escapeHtml(p.n)}" loading="lazy">`:`<div class="p-flame"></div><div class="p-candle"></div>`}</div><div class="product-info"><div class="product-head"><h3>${escapeHtml(p.n)}</h3><span class="tag">${escapeHtml(p.t||"")}</span></div><p class="desc">${escapeHtml(p.q||"")} · ${escapeHtml(p.d||"")}</p>${stickerControl}<div class="price">${money(p.p)}</div><div class="actions"><button class="add" data-add="${p.id}">+ Agregar al carrito</button></div></div></article>`;
+ }).join("");
+}
+function renderCart(){
+ const box=document.getElementById("cartItems");
+ const count=cart.reduce((a,x)=>a+x.qty,0);
+ const total=cart.reduce((a,x)=>{const p=products.find(y=>y.id===x.id);return a+(p?p.p*x.qty:0)},0);
+ document.getElementById("cartCount").textContent=count;
+ document.getElementById("cartButton").classList.toggle("has-items", count>0);
+ if(document.getElementById("cartItemsCount")) document.getElementById("cartItemsCount").textContent=count;
+ document.getElementById("cartTotal").textContent=money(total);
+ if(!cart.length){box.innerHTML='<div class="cart-empty"><strong>Tu pedido está vacío.</strong><small>Agrega tus velitas favoritas y aquí verás el detalle, cantidades y total.</small></div>';return}
+ box.innerHTML=cart.map(x=>{const p=products.find(y=>y.id===x.id);if(!p)return '';const subtotal=p.p*x.qty;const sticker=stickerList(p).find(s=>String(s.id)===String(x.sticker));return `<div class="cart-line"><div><strong>${escapeHtml(p.n)}</strong>${sticker?`<small>Sticker: ${escapeHtml(sticker.name)}</small>`:''}<small>${escapeHtml(p.q||"")} · ${money(p.p)} c/u · Subtotal ${money(subtotal)}</small></div><div class="qty"><button data-dec="${p.id}" data-sticker="${x.sticker||'base'}" aria-label="Disminuir cantidad">−</button><span>${x.qty}</span><button data-inc="${p.id}" data-sticker="${x.sticker||'base'}" aria-label="Aumentar cantidad">+</button><button class="remove-item" data-remove="${p.id}" data-sticker="${x.sticker||'base'}" aria-label="Eliminar ${escapeHtml(p.n)}">×</button></div></div>`}).join("");
+}
+function save(){localStorage.setItem("ld_cart",JSON.stringify(cart));renderCart()}
+document.addEventListener("click",e=>{
+ const a=e.target.closest("[data-add]"),i=e.target.closest("[data-inc]"),d=e.target.closest("[data-dec]"),r=e.target.closest("[data-remove]");
+ if(a){const card=a.closest('[data-product-card]'); const sel=card?.querySelector('[data-sticker-select]'); add(+a.dataset.add, sel?.value||"base");}
+ if(i){const x=cart.find(v=>v.id===+i.dataset.inc && String(v.sticker||"base")===String(i.dataset.sticker||"base"));if(x)x.qty++;save()}
+ if(d){const x=cart.find(v=>v.id===+d.dataset.dec && String(v.sticker||"base")===String(d.dataset.sticker||"base"));if(x){x.qty--;if(x.qty<=0)cart=cart.filter(v=>!(v.id===x.id && String(v.sticker||"base")===String(x.sticker||"base")))}save()}
+ if(r){cart=cart.filter(v=>!(v.id===+r.dataset.remove && String(v.sticker||"base")===String(r.dataset.sticker||"base")));save()}
+ if(e.target.closest("[data-close-wish]"))toggle("wishModal",false);
+ if(e.target.closest("[data-close-share]"))toggle("shareModal",false);
+ if(e.target.closest("[data-close-cart]"))toggle("cart",false);
+});
+document.addEventListener("change",e=>{
+ const sel=e.target.closest('[data-sticker-select]');
+ if(!sel)return;
+ const p=products.find(x=>String(x.id)===String(sel.dataset.stickerSelect)); if(!p)return;
+ const img=sel.closest('[data-product-card]')?.querySelector('[data-product-image]');
+ const src=productVisual(p,sel.value);
+ if(img && src) img.src=src;
+});
+document.querySelectorAll(".filter").forEach(x=>x.addEventListener("click",()=>{document.querySelectorAll(".filter").forEach(y=>y.classList.remove("active"));x.classList.add("active");render(x.dataset.filter)}));
+document.getElementById("wishHotspot").onclick=()=>toggle("wishModal",true);
+document.getElementById("wishSend").onclick=()=>{const v=document.getElementById("wishInput").value.trim();if(v){alert("✨ "+v+"\n\nTu deseo queda encendido por esta noche.");toggle("wishModal",false)}};
+document.getElementById("shareWhatsApp").onclick=()=>openWA("Hola 👋 Te comparto una velita de Luz de Diciembre para este 7 de diciembre 🕯️✨.");
+document.getElementById("cartButton").onclick=()=>toggle("cart",true);
+document.getElementById("sendOrder").onclick=()=>{
+ if(!cart.length){
+   alert("Tu carrito está vacío. Agrega al menos una velita antes de enviar la solicitud.");
+   return;
+ }
+ let total=0;
+ const lines=cart.map(x=>{
+   const p=products.find(y=>y.id===x.id);
+   if(!p)return "";
+   const subtotal=p.p*x.qty;
+   total+=subtotal;
+   return `*${p.n}*
+  • Cantidad: ${x.qty}
+  • Presentación: ${p.q}
+  • Valor unitario: ${money(p.p)}
+  • Subtotal: *${money(subtotal)}*`;
+ }).filter(Boolean);
+ const count=cart.reduce((a,x)=>a+x.qty,0);
+ const now=new Date();
+ const nombres=[...new Set(cart.map(x=>products.find(y=>y.id===x.id)?.n).filter(Boolean))];
+ const referencia=nombres.join(" + ");
+ const fecha=now.toLocaleDateString("es-CO",{day:"2-digit",month:"2-digit",year:"numeric"});
+ const pedido=`*LUZ DE DICIEMBRE*
+━━━━━━━━━━━━━━━━━━
+🕯️ *SOLICITUD DE PEDIDO*
+📋 Referencia: *${referencia}*
+📅 Fecha: ${fecha}
+
+Hola, quiero solicitar el siguiente pedido:
+
+${lines.join("\n\n")}
+
+━━━━━━━━━━━━━━━━━━
+📦 *Total de artículos:* ${count}
+💰 *TOTAL DEL PEDIDO: ${money(total)}*
+
+Agradezco confirmar:
+• Disponibilidad de los productos
+• Valor final del pedido
+• Forma de pago
+• Opciones de entrega
+
+Quedo atento a su confirmación. Muchas gracias. ✨`;
+ openWA(pedido);
+};
+document.getElementById("menu").onclick=()=>alert("En la versión móvil usa la barra y los botones de la página.");
+render();renderCart();
+/* ===== ADMINISTRADOR LOCAL ===== */
 (function(){
-  const ADMIN_CODE = "0712"; // Puedes cambiarlo por otro código.
+  const STORAGE="luz_diciembre_products_v2";
+  const seed = [
+    {id:1,n:"Vela Burbuja",p:12000,q:"1 unidad",t:"Para regalar",c:"regalo",d:"Un diseño moderno y delicado, perfecto para regalar o consentir.",available:true,image:""},
+    {id:2,n:"Vela en Frasco",p:15000,q:"1 unidad",t:"Para el hogar",c:"hogar",d:"Elegancia y calidez en un solo detalle.",available:true,image:""},
+    {id:3,n:"Vela Árbol Navideño",p:14000,q:"1 unidad",t:"Para compartir",c:"compartir",d:"Un toque mágico para esta temporada.",available:true,image:""},
+    {id:4,n:"Vela Estrella",p:10000,q:"1 unidad",t:"Para regalar",c:"regalo",d:"Un pequeño detalle para una noche especial.",available:true,image:""},
+    {id:5,n:"Vela Clásica",p:9000,q:"1 unidad",t:"Para el hogar",c:"hogar",d:"Simple, cálida y perfecta para el alumbrado.",available:true,image:""},
+    {id:6,n:"Pack Compartir",p:25000,q:"6 velitas",t:"Para compartir",c:"compartir",d:"Para encender juntos y llenar la noche de luz.",available:true,image:""}
+  ];
+  let adminProducts=JSON.parse(localStorage.getItem(STORAGE)||"null");
+  if(!Array.isArray(adminProducts)){
+    adminProducts=seed.map(p=>({...p}));
+    localStorage.setItem(STORAGE,JSON.stringify(adminProducts));
+  }
+
+  const modal=document.getElementById("adminModal");
+  const form=document.getElementById("adminForm");
+  const imageInput=document.getElementById("productImage");
+  const preview=document.getElementById("photoPreview");
+  const productsBox=document.getElementById("adminProductList");
+  const stickerBox=document.getElementById("stickerVariants");
+  const stickerAddBtn=document.getElementById("addStickerVariant");
+  function makeStickerRow(data={}){
+    const row=document.createElement('div'); row.className='sticker-row';
+    row.innerHTML=`<input class="sticker-name" maxlength="40" placeholder="Ej. Navidad clásica" value="${String(data.name||'').replace(/"/g,'&quot;')}">
+      <label class="sticker-file-label">📷 Foto<input type="file" class="sticker-file" accept="image/*"></label>
+      <div class="sticker-mini">${data.image?`<img src="${data.image}" alt="">`:'<span>Sin foto</span>'}</div>
+      <button type="button" class="sticker-remove" title="Quitar diseño">×</button>`;
+    row.dataset.id=data.id||('s'+Date.now()+Math.random().toString(36).slice(2,6));
+    row.dataset.image=data.image||'';
+    row.querySelector('.sticker-file').addEventListener('change',()=>{const file=row.querySelector('.sticker-file').files[0];if(!file)return;const r=new FileReader();r.onload=()=>{row.dataset.image=r.result;row.querySelector('.sticker-mini').innerHTML=`<img src="${r.result}" alt="">`};r.readAsDataURL(file)});
+    row.querySelector('.sticker-remove').addEventListener('click',()=>row.remove());
+    stickerBox.appendChild(row);
+  }
+  function renderStickerRows(stickers=[]){stickerBox.innerHTML='';(Array.isArray(stickers)?stickers:[]).forEach(makeStickerRow)}
+  stickerAddBtn?.addEventListener('click',()=>makeStickerRow());
+
+  function save(){localStorage.setItem(STORAGE,JSON.stringify(adminProducts))}
+  function moneyAdmin(n){return new Intl.NumberFormat("es-CO",{style:"currency",currency:"COP",maximumFractionDigits:0}).format(n)}
+  function syncCatalogSource(){
+    // The public catalog can be re-rendered by the existing code when the window reloads.
+    window.dispatchEvent(new CustomEvent("luz:productsChanged",{detail:adminProducts}));
+  }
+  function stats(){
+    document.getElementById("adminTotal").textContent=adminProducts.length;
+    document.getElementById("adminAvailable").textContent=adminProducts.filter(p=>p.available).length;
+    document.getElementById("adminSoldOut").textContent=adminProducts.filter(p=>!p.available).length;
+  }
+  function thumb(p){
+    return p.image
+      ? `<img src="${p.image}" alt="">`
+      : `<div class="admin-mini-candle"></div>`;
+  }
+  function renderAdmin(){
+    stats();
+    productsBox.innerHTML=adminProducts.length?adminProducts.map(p=>`
+      <div class="admin-product">
+        <div class="admin-thumb">${thumb(p)}</div>
+        <div class="admin-product-info">
+          <strong>${p.n}</strong>
+          <small>${p.q} · ${p.t}</small>
+          <div class="admin-price">${moneyAdmin(p.p)}</div>
+          <div class="admin-status ${p.available?"ok":"off"}">${p.available?"● Disponible":"● Agotado"}</div>
+        </div>
+        <div class="admin-product-actions">
+          <button data-admin-edit="${p.id}">Editar</button>
+          <button data-admin-toggle="${p.id}">${p.available?"Agotado":"Activar"}</button>
+          <button data-admin-delete="${p.id}">Eliminar</button>
+        </div>
+      </div>`).join(""):`<p style="color:#777f7d">Todavía no hay productos.</p>`;
+  }
+
+  function resetForm(){
+    form.reset();
+    document.getElementById("editId").value="";
+    document.getElementById("productAvailable").checked=true;
+    preview.innerHTML="<span>📷</span><small>Foto del producto</small>";
+    delete preview.dataset.image;
+    renderStickerRows([]);
+  }
+  function editProduct(id){
+    const p=adminProducts.find(x=>x.id===id);if(!p)return;
+    document.getElementById("editId").value=p.id;
+    document.getElementById("productName").value=p.n;
+    document.getElementById("productPrice").value=p.p;
+    document.getElementById("productQty").value=p.q;
+    document.getElementById("productCat").value=p.c;
+    document.getElementById("productDesc").value=p.d;
+    document.getElementById("productAvailable").checked=!!p.available;
+    preview.innerHTML=p.image?`<img src="${p.image}" alt="">`:"<span>📷</span><small>Sin foto</small>";
+    preview.dataset.image=p.image||"";
+    renderStickerRows(p.stickers||[]);
+    showTab("new");
+  }
+  function showTab(tab){
+    document.querySelectorAll(".admin-tab").forEach(b=>b.classList.toggle("active",b.dataset.adminTab===tab));
+    document.getElementById("adminProductsView").classList.toggle("active",tab==="products");
+    document.getElementById("adminNewView").classList.toggle("active",tab==="new");
+    if(tab==="products")renderAdmin();
+  }
+  function openAdmin(){renderAdmin();resetForm();showTab("products");toggle("adminModal",true)}
+  function closeAdmin(){toggle("adminModal",false)}
+
+  document.getElementById("adminOpen")?.addEventListener("click",openAdmin);
+  document.querySelectorAll("[data-close-admin]").forEach(x=>x.addEventListener("click",closeAdmin));
+  document.querySelectorAll("[data-admin-tab]").forEach(x=>x.addEventListener("click",()=>showTab(x.dataset.adminTab)));
+  document.getElementById("adminCancelEdit")?.addEventListener("click",()=>{resetForm();showTab("products")});
+
+  imageInput?.addEventListener("change",()=>{
+    const file=imageInput.files?.[0];if(!file)return;
+    const reader=new FileReader();
+    reader.onload=()=>{preview.innerHTML=`<img src="${reader.result}" alt="">`;preview.dataset.image=reader.result};
+    reader.readAsDataURL(file);
+  });
+
+  form?.addEventListener("submit",e=>{
+    e.preventDefault();
+    const editId=Number(document.getElementById("editId").value||0);
+    const old=editId?adminProducts.find(x=>x.id===editId):null;
+    const image=preview.dataset.image || old?.image || "";
+    const product={
+      id:editId||Date.now(),
+      n:document.getElementById("productName").value.trim(),
+      p:Number(document.getElementById("productPrice").value||0),
+      q:document.getElementById("productQty").value.trim(),
+      t:({regalo:"Para regalar",hogar:"Para el hogar",compartir:"Para compartir"})[document.getElementById("productCat").value],
+      c:document.getElementById("productCat").value,
+      d:document.getElementById("productDesc").value.trim(),
+      available:document.getElementById("productAvailable").checked,
+      image,
+      stickers:[...document.querySelectorAll('#stickerVariants .sticker-row')].map(row=>({id:row.dataset.id,name:row.querySelector('.sticker-name').value.trim(),image:row.dataset.image||''})).filter(s=>s.name)
+    };
+    if(editId) adminProducts=adminProducts.map(p=>p.id===editId?product:p);
+    else adminProducts.push(product);
+    save();syncCatalogSource();resetForm();showTab("products");
+    alert(editId?"Producto actualizado.":"Producto agregado.");
+  });
+
+  productsBox?.addEventListener("click",e=>{
+    const edit=e.target.closest("[data-admin-edit]");
+    const toggleBtn=e.target.closest("[data-admin-toggle]");
+    const del=e.target.closest("[data-admin-delete]");
+    if(edit)editProduct(Number(edit.dataset.adminEdit));
+    if(toggleBtn){
+      const p=adminProducts.find(x=>x.id===Number(toggleBtn.dataset.adminToggle));
+      if(p){p.available=!p.available;save();renderAdmin();syncCatalogSource();}
+    }
+    if(del){
+      const id=Number(del.dataset.adminDelete);
+      if(confirm("¿Eliminar este producto?")){
+        adminProducts=adminProducts.filter(p=>p.id!==id);save();renderAdmin();syncCatalogSource();
+      }
+    }
+  });
+
+  // Expose products for the main storefront renderer.
+  window.getLuzProducts=()=>adminProducts.filter(p=>p.available);
+  window.addEventListener("luz:productsChanged",()=>{});
+})();
+
+(function(){
+  const applyAdminCatalog=()=>{
+    try{
+      const stored=JSON.parse(localStorage.getItem("luz_diciembre_products_v2")||"null");
+      if(Array.isArray(stored) && stored.length){
+        products.length=0;
+        stored.filter(p=>p.available!==false).forEach(p=>{
+          products.push({id:p.id,n:p.n,p:p.p,q:p.q,t:p.t,c:p.c,d:p.d,image:p.image||"",stickers:Array.isArray(p.stickers)?p.stickers:[]});
+        });
+        if(typeof render==="function"){
+          const active=document.querySelector(".filter.active");
+          render(active?.dataset.filter||"todos");
+        }
+      }
+    }catch(err){console.warn("No se pudo cargar el catálogo administrado",err)}
+  };
+  window.addEventListener("load",applyAdminCatalog);
+  window.addEventListener("luz:productsChanged",applyAdminCatalog);
+})();
+
+/* ===== ADMIN PRIVADO + CATÁLOGO PDF + ACCESO ===== */
+(function(){
+  const ADMIN_CODE = "0712";
   const STORE_KEY = "luz_diciembre_products_v2";
   const adminModal = document.getElementById("adminModal");
+  const adminButton = document.getElementById("adminOpen");
+  const logo = document.getElementById("brandLogo");
 
-  // Keep the existing admin panel functional, but remove its public entry point.
-  // Desktop/mobile: Ctrl+Shift+A -> code -> open panel.
-  function openPrivateAdmin(){
+  function openAdminPanel(){
     if(typeof toggle === "function") toggle("adminModal", true);
     else adminModal?.classList.add("open");
   }
-  // Exposed only for the private access handler below.
-  window.openLuzAdminPanel = openPrivateAdmin;
+  window.openLuzAdminPanel = openAdminPanel;
+
+  function verifyAndOpen(){
+    const code = window.prompt("Acceso privado\nIngresa tu código:");
+    if(code === ADMIN_CODE) openAdminPanel();
+  }
+
+  document.addEventListener("keydown", e=>{
+    if(e.ctrlKey && e.shiftKey && e.key.toLowerCase()==="a"){
+      e.preventDefault(); verifyAndOpen();
+    }
+  });
+
+  if(logo){
+    let taps=0,last=0,timer=null;
+    const reset=()=>{taps=0;if(timer)clearTimeout(timer);timer=null;};
+    logo.addEventListener("pointerup", e=>{
+      if(!window.matchMedia("(max-width:900px)").matches || e.pointerType==="mouse") return;
+      e.preventDefault(); e.stopPropagation();
+      const now=Date.now();
+      if(now-last<90) return;
+      last=now; taps++;
+      if(timer)clearTimeout(timer);
+      timer=setTimeout(reset,1700);
+      if(taps>=5){ reset(); verifyAndOpen(); }
+    }, {passive:false});
+  }
+
+  window.addEventListener("load",()=>{
+    if(location.hash.toLowerCase()==="#admin"){
+      history.replaceState(null,"",location.pathname+location.search);
+      verifyAndOpen();
+    }
+  });
 
   function getAvailableProducts(){
     try{
       const stored=JSON.parse(localStorage.getItem(STORE_KEY)||"null");
-      if(Array.isArray(stored) && stored.length){
+      if(Array.isArray(stored)){
         return stored.filter(p=>p.available!==false);
       }
     }catch(err){}
@@ -25,11 +357,11 @@
   function loadJsPdf(){
     return new Promise((resolve,reject)=>{
       if(window.jspdf?.jsPDF){resolve(window.jspdf.jsPDF);return;}
-      const s=document.createElement("script");
-      s.src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";
-      s.onload=()=>window.jspdf?.jsPDF?resolve(window.jspdf.jsPDF):reject(new Error("jsPDF no disponible"));
-      s.onerror=()=>reject(new Error("No se pudo cargar el generador PDF"));
-      document.head.appendChild(s);
+      const script=document.createElement("script");
+      script.src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";
+      script.onload=()=>window.jspdf?.jsPDF?resolve(window.jspdf.jsPDF):reject(new Error("jsPDF no disponible"));
+      script.onerror=()=>reject(new Error("No se pudo cargar el generador PDF"));
+      document.head.appendChild(script);
     });
   }
   function dataImageType(data){
@@ -37,151 +369,43 @@
     if(/^data:image\/webp/i.test(data))return "WEBP";
     return "JPEG";
   }
-  function drawWrapped(doc, text, x, y, maxWidth, lineHeight){
-    const lines=doc.splitTextToSize(text,maxWidth);
-    doc.text(lines,x,y);
-    return y + lines.length*lineHeight;
+  function drawWrapped(doc,text,x,y,maxWidth,lineHeight){
+    const lines=doc.splitTextToSize(text,maxWidth);doc.text(lines,x,y);return y+lines.length*lineHeight;
   }
   async function downloadCatalogPDF(){
-    const products=getAvailableProducts();
-    if(!products.length){
-      alert("No hay velitas disponibles para generar el catálogo.");
-      return;
-    }
-    const btn=document.getElementById("downloadCatalogPdf");
-    const old=btn?.innerHTML;
+    const list=getAvailableProducts();
+    if(!list.length){alert("No hay velitas disponibles para generar el catálogo.");return;}
+    const btn=document.getElementById("downloadCatalogPdf"), old=btn?.innerHTML;
     if(btn){btn.disabled=true;btn.innerHTML="Preparando catálogo…";}
     try{
       const jsPDF=await loadJsPdf();
       const doc=new jsPDF({orientation:"portrait",unit:"mm",format:"a4"});
       const W=210,H=297;
-      // Background
       doc.setFillColor(6,17,22);doc.rect(0,0,W,H,"F");
-      doc.setTextColor(245,232,203);
-      doc.setFont("times","bold");doc.setFontSize(30);
-      doc.text("LUZ DE DICIEMBRE",20,32);
-      doc.setFont("times","normal");doc.setTextColor(223,184,103);doc.setFontSize(18);
-      doc.text("7 de diciembre · Tradición que ilumina",20,44);
-      doc.setTextColor(180,180,175);doc.setFont("helvetica","normal");doc.setFontSize(10);
-      doc.text("Catálogo de velitas disponibles",20,56);
+      doc.setTextColor(245,232,203);doc.setFont("times","bold");doc.setFontSize(30);doc.text("LUZ DE DICIEMBRE",20,32);
+      doc.setFont("times","normal");doc.setTextColor(223,184,103);doc.setFontSize(18);doc.text("7 de diciembre · Tradición que ilumina",20,44);
+      doc.setTextColor(180,180,175);doc.setFont("helvetica","normal");doc.setFontSize(10);doc.text("Catálogo de velitas disponibles",20,56);
       doc.setDrawColor(180,137,62);doc.setLineWidth(.3);doc.line(20,63,190,63);
-
-      let y=78;
-      const cardH=61;
-      const colW=82;
-      products.forEach((p,idx)=>{
-        const col=(idx%2), row=Math.floor(idx/2);
-        const x=20+col*(colW+10);
-        if(idx>0 && col===0) y += cardH+10;
-        if(y+cardH>275){
-          doc.addPage();doc.setFillColor(6,17,22);doc.rect(0,0,W,H,"F");
-          y=22;
-        }
-        doc.setFillColor(12,28,34);doc.roundedRect(x,y,colW,cardH,4,4,"F");
-        doc.setDrawColor(110,87,46);doc.roundedRect(x,y,colW,cardH,4,4,"S");
-        if(p.image && /^data:image\//.test(p.image)){
-          try{doc.addImage(p.image,dataImageType(p.image),x+4,y+4,28,33,undefined,"FAST");}
-          catch(err){/* keep the card without image */}
-        }else{
-          doc.setFillColor(28,50,50);doc.circle(x+18,y+20,12,"F");
-          doc.setTextColor(238,197,108);doc.setFontSize(16);doc.text("✦",x+15,y+24);
-        }
-        doc.setTextColor(243,225,188);doc.setFont("times","bold");doc.setFontSize(14);
-        const titleLines=doc.splitTextToSize(p.n||"Velita",47);
-        doc.text(titleLines,x+36,y+13);
-        doc.setTextColor(200,170,104);doc.setFont("helvetica","bold");doc.setFontSize(10);
-        doc.text(new Intl.NumberFormat("es-CO",{style:"currency",currency:"COP",maximumFractionDigits:0}).format(p.p||0),x+36,y+29);
-        doc.setTextColor(150,155,152);doc.setFont("helvetica","normal");doc.setFontSize(8);
-        doc.text(p.q||"1 unidad",x+36,y+37);
-        const desc=(p.d||"").slice(0,130);
-        drawWrapped(doc,desc,x+36,y+45,42,3.6);
+      let y=78; const cardH=61,colW=82;
+      list.forEach((p,idx)=>{
+        const col=idx%2,x=20+col*(colW+10);
+        if(idx>0&&col===0)y+=cardH+10;
+        if(y+cardH>275){doc.addPage();doc.setFillColor(6,17,22);doc.rect(0,0,W,H,"F");y=22;}
+        doc.setFillColor(12,28,34);doc.roundedRect(x,y,colW,cardH,4,4,"F");doc.setDrawColor(110,87,46);doc.roundedRect(x,y,colW,cardH,4,4,"S");
+        if(p.image&&/^data:image\//.test(p.image)){try{doc.addImage(p.image,dataImageType(p.image),x+4,y+4,28,33,undefined,"FAST");}catch(err){}}
+        else{doc.setFillColor(28,50,50);doc.circle(x+18,y+20,12,"F");doc.setTextColor(238,197,108);doc.setFontSize(16);doc.text("✦",x+15,y+24);}
+        doc.setTextColor(243,225,188);doc.setFont("times","bold");doc.setFontSize(14);doc.text(doc.splitTextToSize(p.n||"Velita",47),x+36,y+13);
+        doc.setTextColor(200,170,104);doc.setFont("helvetica","bold");doc.setFontSize(10);doc.text(new Intl.NumberFormat("es-CO",{style:"currency",currency:"COP",maximumFractionDigits:0}).format(p.p||0),x+36,y+29);
+        doc.setTextColor(150,155,152);doc.setFont("helvetica","normal");doc.setFontSize(8);doc.text(p.q||"1 unidad",x+36,y+37);drawWrapped(doc,(p.d||"").slice(0,130),x+36,y+45,42,3.6);
       });
-
-      const totalPages=doc.getNumberOfPages();
-      for(let page=1;page<=totalPages;page++){
-        doc.setPage(page);
-        doc.setTextColor(120,125,122);doc.setFont("helvetica","normal");doc.setFontSize(7);
-        doc.text(`Luz de Diciembre · Página ${page} de ${totalPages}`,20,289);
-        doc.text("Pedidos por WhatsApp",190,289,{align:"right"});
-      }
-
+      const pages=doc.getNumberOfPages();
+      for(let page=1;page<=pages;page++){doc.setPage(page);doc.setTextColor(120,125,122);doc.setFont("helvetica","normal");doc.setFontSize(7);doc.text(`Luz de Diciembre · Página ${page} de ${pages}`,20,289);doc.text("Pedidos por WhatsApp",190,289,{align:"right"});}
       doc.save("catalogo-luz-de-diciembre.pdf");
-    }catch(err){
-      console.error(err);
-      alert("No fue posible generar el PDF en este momento. Comprueba que tienes conexión a Internet e inténtalo de nuevo.");
-    }finally{
-      if(btn){btn.disabled=false;btn.innerHTML=old||"↓ Descargar catálogo PDF";}
-    }
+    }catch(err){console.error(err);alert("No fue posible generar el PDF en este momento. Comprueba que tienes conexión a Internet e inténtalo de nuevo.");}
+    finally{if(btn){btn.disabled=false;btn.innerHTML=old||"↓ Descargar catálogo PDF";}}
   }
   document.getElementById("downloadCatalogPdf")?.addEventListener("click",downloadCatalogPDF);
   window.downloadLuzCatalogPDF=downloadCatalogPDF;
-})();
-
-/* ===== ACCESO ADMIN EN CELULAR — UN SOLO MÉTODO ===== */
-(function(){
-  const logo=document.getElementById("brandLogo");
-  const adminButton=document.getElementById("adminOpen");
-  if(!logo || !adminButton) return;
-
-  const ADMIN_CODE="0712";
-  let taps=0;
-  let timer=null;
-  let lastTap=0;
-  let promptOpen=false;
-
-  function reset(){
-    taps=0;
-    if(timer) clearTimeout(timer);
-    timer=null;
-  }
-
-  function verifyAndOpen(){
-    if(promptOpen) return;
-    promptOpen=true;
-    const code=window.prompt("Acceso privado\nIngresa tu código:");
-    promptOpen=false;
-    if(code===ADMIN_CODE){
-      if(typeof window.openLuzAdminPanel === "function") window.openLuzAdminPanel();
-      else adminButton.click();
-    }
-  }
-
-  // Celular: 5 toques rápidos sobre el logo. No navega al inicio.
-  logo.addEventListener("pointerup", function(ev){
-    if(!window.matchMedia("(max-width:900px)").matches) return;
-    if(ev.pointerType === "mouse") return;
-    ev.preventDefault();
-    ev.stopPropagation();
-
-    const now=Date.now();
-    if(now-lastTap<120) return;
-    lastTap=now;
-    taps++;
-    if(timer) clearTimeout(timer);
-    timer=setTimeout(reset,1700);
-
-    if(taps===5){
-      reset();
-      verifyAndOpen();
-    }
-  }, {passive:false});
-
-  // PC: Ctrl + Shift + A.
-  document.addEventListener("keydown", function(e){
-    if(e.ctrlKey && e.shiftKey && e.key.toLowerCase()==="a"){
-      e.preventDefault();
-      verifyAndOpen();
-    }
-  });
-
-  // Alternativa privada: abrir con #admin y digitar el código.
-  function hashAccess(){
-    if(location.hash.toLowerCase()==="#admin"){
-      history.replaceState(null,"",location.pathname+location.search);
-      verifyAndOpen();
-    }
-  }
-  window.addEventListener("load",hashAccess);
 })();
 
 /* ===== CART: ELIMINAR PRODUCTO COMPLETO ===== */
