@@ -11,9 +11,28 @@ const money=n=>new Intl.NumberFormat("es-CO",{style:"currency",currency:"COP",ma
 const openWA=m=>window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(m)}`,"_blank");
 const toggle=(id,on)=>{const e=document.getElementById(id);e.classList.toggle("open",on);e.setAttribute("aria-hidden",String(!on));};
 
+function stickerList(p){
+  return Array.isArray(p.stickers)?p.stickers.filter(s=>s&&s.name):[];
+}
+function productVisual(p, stickerId){
+  const stickers=stickerList(p);
+  const s=stickers.find(v=>String(v.id)===String(stickerId));
+  return s?.image || p.image || "";
+}
+function add(id, stickerId="base"){
+  const f=cart.find(x=>x.id===id && String(x.sticker||"base")===String(stickerId));
+  f?f.qty++:cart.push({id,qty:1,sticker:stickerId||"base"});
+  save();
+}
 function render(filter="todos"){
  const list=filter==="todos"?products:products.filter(p=>p.c===filter);
- document.getElementById("products").innerHTML=list.map(p=>`<article class="product"><div class="product-image">${p.image?`<img class="product-photo" src="${p.image}" alt="${p.n}" loading="lazy">`:`<div class="p-flame"></div><div class="p-candle"></div>`}</div><div class="product-info"><div class="product-head"><h3>${p.n}</h3><span class="tag">${p.t}</span></div><p class="desc">${p.q} · ${p.d}</p><div class="price">${money(p.p)}</div><div class="actions"><button class="add" data-add="${p.id}">+ Agregar al carrito</button></div></div></article>`).join("");
+ document.getElementById("products").innerHTML=list.map(p=>{
+   const stickers=stickerList(p);
+   const firstSticker=stickers[0];
+   const displayImage=productVisual(p, firstSticker?.id||"base");
+   const stickerControl=stickers.length?`<div class="sticker-choice"><label>Diseño de sticker</label><select class="sticker-select" data-sticker-select="${p.id}"><option value="base">Original</option>${stickers.map(s=>`<option value="${String(s.id)}">${escapeHtml(s.name)}</option>`).join("")}</select></div>`:"";
+   return `<article class="product" data-product-card="${p.id}"><div class="product-image">${displayImage?`<img class="product-photo" data-product-image src="${displayImage}" alt="${escapeHtml(p.n)}" loading="lazy">`:`<div class="p-flame"></div><div class="p-candle"></div>`}</div><div class="product-info"><div class="product-head"><h3>${escapeHtml(p.n)}</h3><span class="tag">${escapeHtml(p.t||"")}</span></div><p class="desc">${escapeHtml(p.q||"")} · ${escapeHtml(p.d||"")}</p>${stickerControl}<div class="price">${money(p.p)}</div><div class="actions"><button class="add" data-add="${p.id}">+ Agregar al carrito</button></div></div></article>`;
+ }).join("");
 }
 function renderCart(){
  const box=document.getElementById("cartItems");
@@ -24,19 +43,26 @@ function renderCart(){
  if(document.getElementById("cartItemsCount")) document.getElementById("cartItemsCount").textContent=count;
  document.getElementById("cartTotal").textContent=money(total);
  if(!cart.length){box.innerHTML='<div class="cart-empty"><strong>Tu pedido está vacío.</strong><small>Agrega tus velitas favoritas y aquí verás el detalle, cantidades y total.</small></div>';return}
- box.innerHTML=cart.map(x=>{const p=products.find(y=>y.id===x.id);if(!p)return '';const subtotal=p.p*x.qty;return `<div class="cart-line"><div><strong>${p.n}</strong><small>${p.q} · ${money(p.p)} c/u · Subtotal ${money(subtotal)}</small></div><div class="qty"><button data-dec="${p.id}" aria-label="Disminuir cantidad">−</button><span>${x.qty}</span><button data-inc="${p.id}" aria-label="Aumentar cantidad">+</button><button class="remove-item" data-remove="${p.id}" aria-label="Eliminar ${p.n}">×</button></div></div>`}).join("");
+ box.innerHTML=cart.map(x=>{const p=products.find(y=>y.id===x.id);if(!p)return '';const subtotal=p.p*x.qty;const sticker=stickerList(p).find(s=>String(s.id)===String(x.sticker));return `<div class="cart-line"><div><strong>${escapeHtml(p.n)}</strong>${sticker?`<small>Sticker: ${escapeHtml(sticker.name)}</small>`:''}<small>${escapeHtml(p.q||"")} · ${money(p.p)} c/u · Subtotal ${money(subtotal)}</small></div><div class="qty"><button data-dec="${p.id}" data-sticker="${x.sticker||'base'}" aria-label="Disminuir cantidad">−</button><span>${x.qty}</span><button data-inc="${p.id}" data-sticker="${x.sticker||'base'}" aria-label="Aumentar cantidad">+</button><button class="remove-item" data-remove="${p.id}" data-sticker="${x.sticker||'base'}" aria-label="Eliminar ${escapeHtml(p.n)}">×</button></div></div>`}).join("");
 }
-
 function save(){localStorage.setItem("ld_cart",JSON.stringify(cart));renderCart()}
-function add(id){const f=cart.find(x=>x.id===id);f?f.qty++:cart.push({id,qty:1});save()}
 document.addEventListener("click",e=>{
- const a=e.target.closest("[data-add]"),i=e.target.closest("[data-inc]"),d=e.target.closest("[data-dec]");
- if(a)add(+a.dataset.add);
- if(i){const x=cart.find(v=>v.id===+i.dataset.inc);if(x)x.qty++;save()}
- if(d){const x=cart.find(v=>v.id===+d.dataset.dec);if(x){x.qty--;if(x.qty<=0)cart=cart.filter(v=>v.id!==x.id)}save()}
+ const a=e.target.closest("[data-add]"),i=e.target.closest("[data-inc]"),d=e.target.closest("[data-dec]"),r=e.target.closest("[data-remove]");
+ if(a){const card=a.closest('[data-product-card]'); const sel=card?.querySelector('[data-sticker-select]'); add(+a.dataset.add, sel?.value||"base");}
+ if(i){const x=cart.find(v=>v.id===+i.dataset.inc && String(v.sticker||"base")===String(i.dataset.sticker||"base"));if(x)x.qty++;save()}
+ if(d){const x=cart.find(v=>v.id===+d.dataset.dec && String(v.sticker||"base")===String(d.dataset.sticker||"base"));if(x){x.qty--;if(x.qty<=0)cart=cart.filter(v=>!(v.id===x.id && String(v.sticker||"base")===String(x.sticker||"base")))}save()}
+ if(r){cart=cart.filter(v=>!(v.id===+r.dataset.remove && String(v.sticker||"base")===String(r.dataset.sticker||"base")));save()}
  if(e.target.closest("[data-close-wish]"))toggle("wishModal",false);
  if(e.target.closest("[data-close-share]"))toggle("shareModal",false);
  if(e.target.closest("[data-close-cart]"))toggle("cart",false);
+});
+document.addEventListener("change",e=>{
+ const sel=e.target.closest('[data-sticker-select]');
+ if(!sel)return;
+ const p=products.find(x=>String(x.id)===String(sel.dataset.stickerSelect)); if(!p)return;
+ const img=sel.closest('[data-product-card]')?.querySelector('[data-product-image]');
+ const src=productVisual(p,sel.value);
+ if(img && src) img.src=src;
 });
 document.querySelectorAll(".filter").forEach(x=>x.addEventListener("click",()=>{document.querySelectorAll(".filter").forEach(y=>y.classList.remove("active"));x.classList.add("active");render(x.dataset.filter)}));
 document.getElementById("wishHotspot").onclick=()=>toggle("wishModal",true);
@@ -101,26 +127,10 @@ render();renderCart();
     {id:5,n:"Vela Clásica",p:9000,q:"1 unidad",t:"Para el hogar",c:"hogar",d:"Simple, cálida y perfecta para el alumbrado.",available:true,image:""},
     {id:6,n:"Pack Compartir",p:25000,q:"6 velitas",t:"Para compartir",c:"compartir",d:"Para encender juntos y llenar la noche de luz.",available:true,image:""}
   ];
-  const INIT_KEY="luz_diciembre_products_initialized_v1";
-  let storedProducts=null;
-  try{ storedProducts=JSON.parse(localStorage.getItem(STORAGE)||"null"); }catch(err){ storedProducts=null; }
-
-  // Corrige instalaciones antiguas que dejaron el catálogo en [] sin impedir
-  // que el administrador pueda borrar todos los productos intencionalmente.
-  let adminProducts;
-  if(Array.isArray(storedProducts)){
-    adminProducts=storedProducts;
-    if(!localStorage.getItem(INIT_KEY)){
-      if(adminProducts.length===0){
-        adminProducts=seed.map(p=>({...p}));
-        localStorage.setItem(STORAGE,JSON.stringify(adminProducts));
-      }
-      localStorage.setItem(INIT_KEY,"1");
-    }
-  }else{
+  let adminProducts=JSON.parse(localStorage.getItem(STORAGE)||"null");
+  if(!Array.isArray(adminProducts)){
     adminProducts=seed.map(p=>({...p}));
     localStorage.setItem(STORAGE,JSON.stringify(adminProducts));
-    localStorage.setItem(INIT_KEY,"1");
   }
 
   const modal=document.getElementById("adminModal");
@@ -128,6 +138,22 @@ render();renderCart();
   const imageInput=document.getElementById("productImage");
   const preview=document.getElementById("photoPreview");
   const productsBox=document.getElementById("adminProductList");
+  const stickerBox=document.getElementById("stickerVariants");
+  const stickerAddBtn=document.getElementById("addStickerVariant");
+  function makeStickerRow(data={}){
+    const row=document.createElement('div'); row.className='sticker-row';
+    row.innerHTML=`<input class="sticker-name" maxlength="40" placeholder="Ej. Navidad clásica" value="${String(data.name||'').replace(/"/g,'&quot;')}">
+      <label class="sticker-file-label">📷 Foto<input type="file" class="sticker-file" accept="image/*"></label>
+      <div class="sticker-mini">${data.image?`<img src="${data.image}" alt="">`:'<span>Sin foto</span>'}</div>
+      <button type="button" class="sticker-remove" title="Quitar diseño">×</button>`;
+    row.dataset.id=data.id||('s'+Date.now()+Math.random().toString(36).slice(2,6));
+    row.dataset.image=data.image||'';
+    row.querySelector('.sticker-file').addEventListener('change',()=>{const file=row.querySelector('.sticker-file').files[0];if(!file)return;const r=new FileReader();r.onload=()=>{row.dataset.image=r.result;row.querySelector('.sticker-mini').innerHTML=`<img src="${r.result}" alt="">`};r.readAsDataURL(file)});
+    row.querySelector('.sticker-remove').addEventListener('click',()=>row.remove());
+    stickerBox.appendChild(row);
+  }
+  function renderStickerRows(stickers=[]){stickerBox.innerHTML='';(Array.isArray(stickers)?stickers:[]).forEach(makeStickerRow)}
+  stickerAddBtn?.addEventListener('click',()=>makeStickerRow());
 
   function save(){localStorage.setItem(STORAGE,JSON.stringify(adminProducts))}
   function moneyAdmin(n){return new Intl.NumberFormat("es-CO",{style:"currency",currency:"COP",maximumFractionDigits:0}).format(n)}
@@ -169,6 +195,8 @@ render();renderCart();
     document.getElementById("editId").value="";
     document.getElementById("productAvailable").checked=true;
     preview.innerHTML="<span>📷</span><small>Foto del producto</small>";
+    delete preview.dataset.image;
+    renderStickerRows([]);
   }
   function editProduct(id){
     const p=adminProducts.find(x=>x.id===id);if(!p)return;
@@ -180,6 +208,8 @@ render();renderCart();
     document.getElementById("productDesc").value=p.d;
     document.getElementById("productAvailable").checked=!!p.available;
     preview.innerHTML=p.image?`<img src="${p.image}" alt="">`:"<span>📷</span><small>Sin foto</small>";
+    preview.dataset.image=p.image||"";
+    renderStickerRows(p.stickers||[]);
     showTab("new");
   }
   function showTab(tab){
@@ -188,13 +218,7 @@ render();renderCart();
     document.getElementById("adminNewView").classList.toggle("active",tab==="new");
     if(tab==="products")renderAdmin();
   }
-  function openAdmin(){
-    resetForm();
-    showTab("products");
-    toggle("adminModal",true);
-    // Render again after the panel becomes visible to avoid an initial blank/0 state.
-    requestAnimationFrame(()=>requestAnimationFrame(renderAdmin));
-  }
+  function openAdmin(){renderAdmin();resetForm();showTab("products");toggle("adminModal",true)}
   function closeAdmin(){toggle("adminModal",false)}
 
   document.getElementById("adminOpen")?.addEventListener("click",openAdmin);
@@ -223,7 +247,8 @@ render();renderCart();
       c:document.getElementById("productCat").value,
       d:document.getElementById("productDesc").value.trim(),
       available:document.getElementById("productAvailable").checked,
-      image
+      image,
+      stickers:[...document.querySelectorAll('#stickerVariants .sticker-row')].map(row=>({id:row.dataset.id,name:row.querySelector('.sticker-name').value.trim(),image:row.dataset.image||''})).filter(s=>s.name)
     };
     if(editId) adminProducts=adminProducts.map(p=>p.id===editId?product:p);
     else adminProducts.push(product);
@@ -260,7 +285,7 @@ render();renderCart();
       if(Array.isArray(stored) && stored.length){
         products.length=0;
         stored.filter(p=>p.available!==false).forEach(p=>{
-          products.push({id:p.id,n:p.n,p:p.p,q:p.q,t:p.t,c:p.c,d:p.d,image:p.image||""});
+          products.push({id:p.id,n:p.n,p:p.p,q:p.q,t:p.t,c:p.c,d:p.d,image:p.image||"",stickers:Array.isArray(p.stickers)?p.stickers:[]});
         });
         if(typeof render==="function"){
           const active=document.querySelector(".filter.active");
